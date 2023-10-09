@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express')
 const mysql = require('mysql')
 const myconn = require('express-myconnection')
@@ -6,11 +7,11 @@ const routes = require('./routes')
 const app = express()
 app.set('port', process.env.PORT|| 8080)
 const dbConfig = {
-    host: 'localhost',
+    host: process.env.HOST,
     port: 3306,
-    user: 'root',
-    password: '',
-    database: 'nimbo'
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE
 }
 
 //Middlewares

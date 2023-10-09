@@ -1,3 +1,4 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const loginController = {}
 const mysql = require('mysql')
@@ -15,10 +16,11 @@ const password=req.body.password_usuario;
 
   //Conexion con la base de datos//
     const conection = mysql.createConnection({
-      host:'localhost',
-      user:'root',
-      password:'',
-      database:'nimbo'
+      host: process.env.HOST,
+      port: 3306,
+      user: process.env.USER,
+      password: process.env.PASSWORD,
+      database: process.env.DATABASE
     })
     conection.connect( (err) => {})
 
