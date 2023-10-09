@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: nimbo
+    ports:
+      - "3306:3306"
