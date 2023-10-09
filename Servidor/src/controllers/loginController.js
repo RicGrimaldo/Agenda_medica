@@ -129,7 +129,7 @@ const password=req.body.password_usuario;
     })
     
     //Se realizan las consultas para obtener datos y saber el tipo de usuario - Tipo Administrador//
-    conection.query('SELECT correoAdministrador, contrasenaAdministrador, idAdministrador FROM `Administradores` WHERE correoAdministrador=?',[correo],(err, rows) =>{
+    conection.query('SELECT correoAdministrador, contrasenaAdministrador, idAdministrador FROM `administradores` WHERE correoAdministrador=?',[correo],(err, rows) =>{
       if(rows[0]!=null){
         const usuario=rows[0];
         console.log(usuario.correoAdministrador);
