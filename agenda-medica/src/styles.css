@@ -3,7 +3,6 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-
   :root {
     --azul-rey: #0A1C40;
     --azul-marino: #112540;
@@ -16,85 +15,82 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     background-color: var(--azul-rey);
     color: #fff;
 }
-a{
-  color: black;
-}
 
 /*Navbar Styles*/
-.bg-navbar{
-  background-color: var(--navbar-bg-color);
-}
-
-.nav-link:hover {
-  color: rgba(255, 255, 255, 0.767);
-  text-shadow: 1px 1px 0px #000;
-}
-
-.nav-link{
-  text-decoration: none;
-  color: white;
-}
-
-
-.nav-item{
-  font-size: 20px;
-}
-
-@media (max-width: 990px) {
-  .nav-item {
-    font-size: 17px;
-    margin-bottom: 0.5rem;
+  .bg-navbar{
+    background-color: var(--navbar-bg-color);
   }
-  .exit-btn-nav{
-    text-align: left!important;
+
+  .nav-link:hover, .log-out-icon:hover {
+    color: rgba(255, 255, 255, 0.767);
+    text-shadow: 1px 1px 0px #000;
+}
+
+  .nav-link, .nav-link:focus, .log-out-icon:focus{
+    text-decoration: none;
+    color: white;
   }
-}
 
-@media (max-width: 767px) {
-  .nav-item {
-    font-size: 15px;
-    margin-bottom: 0.5rem;
+  .nav-item{
+    font-size: 20px;
   }
-  .exit-btn-nav{
-    text-align: left!important;
+
+  @media (max-width: 990px) {
+    .nav-item {
+      font-size: 17px;
+      margin-bottom: 0.5rem;
+    }
+    .exit-btn-nav{
+      text-align: left!important;
+    }
   }
-}
 
-.logo{
-  width: 10rem;
-  padding-left: 5%;
-}
+  @media (max-width: 767px) {
+    .nav-item {
+      font-size: 15px;
+      margin-bottom: 0.5rem;
+    }
+    .exit-btn-nav{
+      text-align: left!important;
+    }
+  }
+
+  .logo{
+    width: 10rem;
+    padding-left: 5%;
+  }
 
 
-.image-container{
-  width: 20%;
-}
+  .image-container{
+    width: 20%;
+  }
 
-.active{
-  text-align: -webkit-center;
-  color: white;
-  background-color: var(--azul-claro);
-  border-radius: 12px;
-  width: -moz-fit-content;
-  width: fit-content;
-  padding: 4px;
-}
+  .active{
+    text-align: -webkit-center;
+    color: white;
+    background-color: var(--azul-claro);
+    border-radius: 12px;
+    width: -moz-fit-content;
+    width: fit-content;
+    padding: 4px;
+  }
 
-.log-out-container{
-  width: 20%;
-  text-align: center;
-}
+  .log-out-container{
+    width: 20%;
+    text-align: center;
+  }
 
-.log-out-link{
-  width: 50%;
-  text-align: right;
-}
+  .log-out-link{
+    width: 50%;
+    text-align: right;
+  }
 
-.log-out-icon{
-  color: white;    
-  padding-right: 5%;
-}
+  .log-out-icon{
+    color: white;    
+    padding-right: 5%;
+  }
 
-.log-out-icon:hover{
-  color: black;
-}
+  a{
+    text-decoration: none;
+    color: white;
+  }

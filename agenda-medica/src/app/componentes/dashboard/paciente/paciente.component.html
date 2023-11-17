@@ -1,35 +1,32 @@
-<mat-toolbar class="encabezado">
-  <div class="contenedorImg">
-    <img class="logo" src="../../../assets/img/logo.webp"/>
-  </div>
-  <div class="contenedorMenu">
-   <table>
-      <tr>
-         <td >
-            <a [ngClass]="(dataDashboard$ | async)?.menuActivo == 'agenda' ? 'active' : ''"
-            routerLink="/dashboard/paciente/agenda/{{id}}" >Agenda</a>
-          
-         </td>
-         <td>
-            <a  [ngClass]="(dataDashboard$ | async)?.menuActivo == 'nueva-cita' ? 'active' : ''"
-            routerLink="/dashboard/paciente/nueva-cita/{{id}}" >Nueva cita</a>
-            
-         </td>
-         <td>
-            <a  [ngClass]="(dataDashboard$ | async)?.menuActivo == 'historial-clinico' ? 'active' : ''"
-            routerLink="/dashboard/paciente/historial-clinico/{{id}}" 
-            
-            >Historial clínico</a>
-         </td>
-      </tr>
-   </table>
-  </div>
- <div class="contenedorLogout">
-   <a class="boton" [routerLink]="['/logout']">
-      <mat-icon class="icono">logout</mat-icon>
-    </a>
- </div>
-  
-</mat-toolbar>
+<nav class="navbar navbar-expand-lg bg-navbar" data-bs-theme="dark">
+   <div class="container-fluid p-3">
+      <div class="image-container">
+         <img class="logo" src="assets/img/logo.webp" alt="Logo">
+      </div>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-md-between" id="navbar">
+         <div class="nav-item">
+               <a class="nav-link" routerLinkActive="active"
+               routerLink="/dashboard/paciente/agenda/{{id}}" aria-current="page">Agenda</a>
+         </div>
+         <div class="nav-item">
+               <a class="nav-link" routerLinkActive="active"
+               routerLink="/dashboard/paciente/nueva-cita/{{id}}">Nueva cita</a>
+         </div>
+         <div class="nav-item">
+               <a class="nav-link" routerLinkActive="active"
+               routerLink="/dashboard/paciente/historial-clinico/{{id}}">Historial clínico</a>
+         </div>
+         <div class="log-out-container nav-item exit-btn-nav">
+               <a class="log-out-link" [routerLink]="['/logout']">
+                  <mat-icon class="log-out-icon">logout</mat-icon>
+               </a>
+         </div>
+      </div>
+   </div>
+</nav>
 <router-outlet></router-outlet>
  
