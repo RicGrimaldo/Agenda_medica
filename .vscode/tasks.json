@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run node",
+      "type": "shell",
+      "command": "cd Servidor; npm run start",
+      "windows": {
+        "command": "cd Servidor; npm run start"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+        {
+      "label": "Run angular",
+      "type": "shell",
+      "command": "cd agenda-medica; ng serve --o",
+      "windows": {
+        "command": "cd agenda-medica; ng serve --o"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}

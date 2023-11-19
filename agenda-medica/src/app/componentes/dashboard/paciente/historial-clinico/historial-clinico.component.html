@@ -7,9 +7,9 @@
      <ng-container *ngIf="rol==1">
       <div class="titulo">  <h1>Historial Clínico del Paciente{{nombrePaciente}}</h1><button class="btn btn-secondary" type="button" (click)="descargar()">Descargar</button></div>
      </ng-container>
-    <div class="mat-elevation-z8 ">
+    <div class="mat-elevation-z8 table-responsive">
       <!-- Tabla de citas -->
-      <table mat-table [dataSource]="dataSource" >
+      <table mat-table [dataSource]="dataSource"  >
   
         <ng-container matColumnDef="fecha">
           <th mat-header-cell *matHeaderCellDef > Fecha </th>
