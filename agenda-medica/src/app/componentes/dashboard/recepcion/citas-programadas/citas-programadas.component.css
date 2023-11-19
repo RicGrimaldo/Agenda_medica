@@ -22,6 +22,7 @@
   .contenedor_hijo .formulario{
     height: 18%;
     width: 100%;
+    margin-bottom: 0.5rem;
     }
   
     .contenedor_hijo .tabla{
@@ -59,4 +60,11 @@
   
   mat-icon{
     display: flex;
+  }
+  @media (max-width: 590px) {
+    .contenedor_hijo{
+   
+      height: 90%;
+      width: 95%;
+    }
   }
