@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -24,10 +25,18 @@
     "qrcode": "^1.5.3"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "jest": "^29.7.0",
     "nodemon": "^2.0.22",
     "standard": "^17.1.0"
   },
   "eslintConfig": {
+    "env": {
+      "jest": true
+    },
     "extends": "./node_modules/standard/eslintrc.json"
+  },
+  "jest": {
+    "verbose": true
   }
 }
