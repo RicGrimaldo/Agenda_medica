@@ -7,3 +7,29 @@
     width: 50%;
     margin-top: 5%;
   }
+
+  @media (max-width: 1010px) {
+    .container{
+   
+      width: 60%;
+    }
+  }
+
+  @media (max-width: 845px) {
+    .container{
+   
+      width: 70%;
+    }
+  }
+  @media (max-width: 730px) {
+    .container{
+   
+      width: 85%;
+    }
+  }
+  @media (max-width: 600px) {
+    .container{
+   
+      width: 100%;
+    }
+  }
