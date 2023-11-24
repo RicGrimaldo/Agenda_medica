@@ -1,4 +1,4 @@
-module.exports = class LogInResponseDto {
+module.exports = class LogInResDto {
   constructor (status, userId, roleId) {
     this._status = status
     this._userId = userId

@@ -1,7 +1,7 @@
 const Roles = require('../constants/Roles')
 const UserDto = require('../dtos/UserDto')
 const EncryptionHelper = require('../helpers/EncryptionHelper')
-const UserCanLogInUseCase = require('./UserCanLogInUseCase')
+const UserCanLogInUseCase = require('./UserCanLogIn')
 
 class FakeUserStorage {
   #userDtos
@@ -19,7 +19,9 @@ class FakeUserStorage {
   }
 
   findByEmail (email) {
-    return this.userDtos.find(userEntity => userEntity.email === email)
+    return new Promise((resolve) => {
+      resolve(this.userDtos.find(userEntity => userEntity.email === email))
+    })
   }
 }
 
@@ -30,12 +32,12 @@ describe('Test user can log in use case', () => {
   const PASSWORD = 'password'
   const ROLE_ID = Roles.PATIENT
   const USER_ENTITY = new UserDto(ID, EMAIL, encryptionHelper.encryptString(PASSWORD), ROLE_ID)
-  let userCanLogInUseCase = null
+  let userCanLogInUC = null
   let userStorage = null
 
   beforeEach(() => {
     userStorage = generateUserStorage()
-    userCanLogInUseCase = new UserCanLogInUseCase(userStorage, encryptionHelper)
+    userCanLogInUC = new UserCanLogInUseCase(userStorage, encryptionHelper)
   })
 
   const generateUserStorage = () => {
@@ -52,29 +54,29 @@ describe('Test user can log in use case', () => {
   }
 
   it('should be defined', () => {
-    expect(userCanLogInUseCase).toBeDefined()
+    expect(userCanLogInUC).toBeDefined()
   })
 
-  it('should validate an existing user', () => {
+  it('should validate an existing user', async () => {
     userStorage.addUserEntity(USER_ENTITY)
-    const logInResponseDto = userCanLogInUseCase.logIn(EMAIL, PASSWORD)
-    expect(logInResponseDto.status).toBeTruthy()
-    expect(logInResponseDto.userId).toBeDefined()
-    expect(logInResponseDto.roleId).toBeDefined()
+    const logInResDto = await userCanLogInUC.logIn(EMAIL, PASSWORD)
+    expect(logInResDto.status).toBeTruthy()
+    expect(logInResDto.userId).toBeDefined()
+    expect(logInResDto.roleId).toBeDefined()
   })
 
-  it('should return the correct user', () => {
+  it('should return the correct user', async () => {
     userStorage.addUserEntity(USER_ENTITY)
-    const logInResponseDto = userCanLogInUseCase.logIn(EMAIL, PASSWORD)
-    expect(logInResponseDto.status).toBeTruthy()
-    expect(logInResponseDto.userId).toBe(ID)
-    expect(logInResponseDto.roleId).toBe(ROLE_ID)
+    const logInResDto = await userCanLogInUC.logIn(EMAIL, PASSWORD)
+    expect(logInResDto.status).toBeTruthy()
+    expect(logInResDto.userId).toBe(ID)
+    expect(logInResDto.roleId).toBe(ROLE_ID)
   })
 
-  it('should reject a non existing user', () => {
-    const logInResponseDto = userCanLogInUseCase.logIn(EMAIL, PASSWORD)
-    expect(logInResponseDto.status).toBeFalsy()
-    expect(logInResponseDto.userId).toBeNull()
-    expect(logInResponseDto.roleId).toBeNull()
+  it('should reject a non existing user', async () => {
+    const logInResDto = await userCanLogInUC.logIn(EMAIL, PASSWORD)
+    expect(logInResDto.status).toBeFalsy()
+    expect(logInResDto.userId).toBeNull()
+    expect(logInResDto.roleId).toBeNull()
   })
 })
