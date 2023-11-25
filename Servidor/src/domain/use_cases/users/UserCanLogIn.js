@@ -1,4 +1,4 @@
-const LogInResDto = require('../dtos/LogInResDto')
+const LogInResDto = require('../../dtos/LogInResDto')
 
 module.exports = class UserCanLogInUseCase {
   #userStorage

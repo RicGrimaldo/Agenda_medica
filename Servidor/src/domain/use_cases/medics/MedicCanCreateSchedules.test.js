@@ -1,7 +1,7 @@
 const dayjs = require('dayjs')
 const customParseFormat = require('dayjs/plugin/customParseFormat')
 dayjs.extend(customParseFormat)
-const MedicEntity = require('../entities/MedicEntity')
+const MedicEntity = require('../../entities/MedicEntity')
 const MedicCanCreateSchedulesUseCase = require('./MedicCanCreateSchedules')
 
 class FakeMedicStorage {
@@ -23,7 +23,7 @@ class FakeMedicStorage {
 
   async createSchedules (medicId, scheduleDtos) {
     return new Promise((resolve) => {
-      resolve(medicId && scheduleDtos.length > 0)
+      resolve(medicId ? scheduleDtos.map((_, index) => index) : [])
     })
   }
 }

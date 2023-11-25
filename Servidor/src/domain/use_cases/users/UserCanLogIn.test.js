@@ -1,6 +1,6 @@
-const Roles = require('../constants/Roles')
-const UserDto = require('../dtos/UserDto')
-const EncryptionHelper = require('../helpers/EncryptionHelper')
+const Roles = require('../../constants/Roles')
+const UserDto = require('../../dtos/UserDto')
+const EncryptionHelper = require('../../helpers/EncryptionHelper')
 const UserCanLogInUseCase = require('./UserCanLogIn')
 
 class FakeUserStorage {

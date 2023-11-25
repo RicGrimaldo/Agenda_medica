@@ -1,8 +1,9 @@
 module.exports = class ScheduleDto {
-  constructor (id, startDateTime, endDateTime) {
+  constructor (id, startDateTime, endDateTime, medicId) {
     this._id = id
     this._startDateTime = startDateTime
     this._endDateTime = endDateTime
+    this._medicId = medicId
   }
 
   get id () {
@@ -27,5 +28,13 @@ module.exports = class ScheduleDto {
 
   set endDateTime (endDateTime) {
     this._endDateTime = endDateTime
+  }
+
+  get medicId () {
+    return this._medicId
+  }
+
+  set medicId (medicId) {
+    this._medicId = medicId
   }
 }

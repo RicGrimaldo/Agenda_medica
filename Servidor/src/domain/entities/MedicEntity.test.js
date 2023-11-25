@@ -61,7 +61,7 @@ describe('Test medic entity', () => {
   })
 
   it('should not add an schedule on a day that previously had schedules', () => {
-    const scheduleDto = new ScheduleDto(10, startDateTime.add(1, 'hour').format(), endDateTime.add(1, 'hour').format())
+    const scheduleDto = new ScheduleDto(10, startDateTime.add(1, 'hour').format(), endDateTime.add(1, 'hour').format(), ID)
     medicEntity.scheduleDtos.push(scheduleDto)
     expect(() => { medicEntity.addSchedule(startDateTime.format(), endDateTime.format()) }).toThrow(Error)
   })
