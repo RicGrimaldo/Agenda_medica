@@ -34,7 +34,22 @@ describe('Test medic can create schedules use case', () => {
   let medicCanCreateSchedulesUC = null
 
   beforeEach(() => {
-    medicCanCreateSchedulesUC = new MedicCanCreateSchedulesUseCase(new FakeMedicStorage([new MedicEntity(ID, [])]))
+    const medicEntity = new MedicEntity(
+      ID,
+      'Dr. Smith',
+      'XYZ456',
+      '1980-05-15',
+      'dr.smith@example.com',
+      99999998,
+      '789 Medical St',
+      2,
+      'Clinic A',
+      123,
+      'PRO123',
+      false,
+      []
+    )
+    medicCanCreateSchedulesUC = new MedicCanCreateSchedulesUseCase(new FakeMedicStorage([medicEntity]))
   })
 
   it('should be defined', () => {

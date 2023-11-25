@@ -4,6 +4,7 @@ const PatientEntity = require('../../entities/PatientEntity')
 const PatientCanCreateAppointmentsUseCase = require('./PatientCanCreateAppointments')
 const AppointmentDto = require('../../dtos/AppointmentDto')
 const AppointmentModalities = require('../../constants/AppointmentModalities')
+const Genres = require('../../constants/Genres')
 
 class FakePatientStorage {
   #patientEntities
@@ -76,7 +77,21 @@ describe('Test patient can create appointments use case', () => {
   let patientCanCreateAppointmentsUC = null
 
   beforeEach(() => {
-    const patientStorage = new FakePatientStorage([new PatientEntity(PATIENT_ID, [])])
+    const patientEntity = new PatientEntity(
+      PATIENT_ID,
+      'John Doe',
+      'ABC123',
+      '1990-01-01',
+      'john.doe@example.com',
+      99999999,
+      '123 Main St',
+      22,
+      Genres.Maculine,
+      'password123',
+      false,
+      []
+    )
+    const patientStorage = new FakePatientStorage([patientEntity])
     const scheduleStorage = generateSchedules()
     const appointmentStorage = new FakeAppointmentStorage([new AppointmentDto(1, PATIENT_ID + 1, SCHEDULE_ID + 1)])
     patientCanCreateAppointmentsUC = new PatientCanCreateAppointmentsUseCase(patientStorage, scheduleStorage, appointmentStorage)

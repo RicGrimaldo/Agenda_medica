@@ -1,6 +1,5 @@
 const Roles = require('../../constants/Roles')
 const UserDto = require('../../dtos/UserDto')
-const EncryptionHelper = require('../../helpers/EncryptionHelper')
 const UserCanLogInUseCase = require('./UserCanLogIn')
 
 class FakeUserStorage {
@@ -26,18 +25,17 @@ class FakeUserStorage {
 }
 
 describe('Test user can log in use case', () => {
-  const encryptionHelper = new EncryptionHelper()
   const ID = 10
   const EMAIL = 'email@mail.com'
   const PASSWORD = 'password'
   const ROLE_ID = Roles.PATIENT
-  const USER_ENTITY = new UserDto(ID, EMAIL, encryptionHelper.encryptString(PASSWORD), ROLE_ID)
+  const USER_ENTITY = new UserDto(ID, EMAIL, PASSWORD, ROLE_ID)
   let userCanLogInUC = null
   let userStorage = null
 
   beforeEach(() => {
     userStorage = generateUserStorage()
-    userCanLogInUC = new UserCanLogInUseCase(userStorage, encryptionHelper)
+    userCanLogInUC = new UserCanLogInUseCase(userStorage)
   })
 
   const generateUserStorage = () => {
@@ -48,7 +46,7 @@ describe('Test user can log in use case', () => {
       { id: 7, email: 'email@test.com', password: 'pass123', roleId: Roles.RECEPTIONIST }
     ]
     userDtos.forEach((user) => {
-      userStorage.addUserEntity(new UserDto(user.id, user.email, encryptionHelper.encryptString(user.password), user.roleId))
+      userStorage.addUserEntity(new UserDto(user.id, user.email, user.password, user.roleId))
     })
     return userStorage
   }

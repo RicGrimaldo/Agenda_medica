@@ -7,10 +7,32 @@ dayjs.extend(isBetween)
 
 module.exports = class MedicEntity {
   #id
+  #name
+  #curp
+  #birthDate
+  #email
+  #phone
+  #address
+  #specialityId
+  #office
+  #professionalId
+  #password
+  #blocked
   #scheduleDtos
 
-  constructor (id, scheduleDtos) {
+  constructor (id, name, curp, birthDate, email, phone, address, specialityId, office, professionalId, password, blocked, scheduleDtos) {
     this.#id = id
+    this.#name = name
+    this.#curp = curp
+    this.#birthDate = birthDate
+    this.#email = email
+    this.#phone = phone
+    this.#address = address
+    this.#specialityId = specialityId
+    this.#office = office
+    this.#professionalId = professionalId
+    this.#password = password
+    this.#blocked = blocked
     this.#scheduleDtos = scheduleDtos
   }
 
@@ -18,8 +40,104 @@ module.exports = class MedicEntity {
     return this.#id
   }
 
+  set id (id) {
+    this.#id = id
+  }
+
+  get name () {
+    return this.#name
+  }
+
+  set name (name) {
+    this.#name = name
+  }
+
+  get curp () {
+    return this.#curp
+  }
+
+  set curp (curp) {
+    this.#curp = curp
+  }
+
+  get birthDate () {
+    return this.#birthDate
+  }
+
+  set birthDate (birthDate) {
+    this.#birthDate = birthDate
+  }
+
+  get email () {
+    return this.#email
+  }
+
+  set email (email) {
+    this.#email = email
+  }
+
+  get phone () {
+    return this.#phone
+  }
+
+  set phone (phone) {
+    this.#phone = phone
+  }
+
+  get address () {
+    return this.#address
+  }
+
+  set address (address) {
+    this.#address = address
+  }
+
+  get specialityId () {
+    return this.#specialityId
+  }
+
+  set specialityId (specialityId) {
+    this.#specialityId = specialityId
+  }
+
+  get office () {
+    return this.#office
+  }
+
+  set office (office) {
+    this.#office = office
+  }
+
+  get professionalId () {
+    return this.#professionalId
+  }
+
+  set professionalId (professionalId) {
+    this.#professionalId = professionalId
+  }
+
+  get password () {
+    return this.#password
+  }
+
+  set password (password) {
+    this.#password = password
+  }
+
+  get blocked () {
+    return this.#blocked
+  }
+
+  set blocked (blocked) {
+    this.#blocked = blocked
+  }
+
   get scheduleDtos () {
     return this.#scheduleDtos
+  }
+
+  set scheduleDtos (scheduleDtos) {
+    this.#scheduleDtos = scheduleDtos
   }
 
   addMultipleSchedules (startDateTime, endDateTime, duration) {

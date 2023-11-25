@@ -1,25 +1,19 @@
-const LogInResDto = require('../../dtos/LogInResDto')
+const LogInResDto = require('../../dtos/responses/LogInResDto')
 
 module.exports = class UserCanLogInUseCase {
   #userStorage
-  #encryptionHelper
 
-  constructor (userStorage, encryptionHelper) {
+  constructor (userStorage) {
     this.#userStorage = userStorage
-    this.#encryptionHelper = encryptionHelper
   }
 
   get userStorage () {
     return this.#userStorage
   }
 
-  get encryptionHelper () {
-    return this.#encryptionHelper
-  }
-
   async logIn (email, password) {
     const userDto = await this.userStorage.findByEmail(email)
-    if (userDto && this.encryptionHelper.encryptString(password) === userDto.password) {
+    if (userDto && password === userDto.password) {
       return new LogInResDto(true, userDto.id, userDto.roleId)
     }
     return new LogInResDto(false, null, null)

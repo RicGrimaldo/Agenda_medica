@@ -1,4 +1,4 @@
-const CreateAppointmentResDto = require('../../dtos/CreateAppointmentResDto')
+const CreateAppointmentResDto = require('../../dtos/responses/CreateAppointmentResDto')
 
 module.exports = class PatientCanCreateAppointmentsUseCase {
   #patientStorage

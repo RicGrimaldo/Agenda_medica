@@ -11,7 +11,21 @@ describe('Test medic entity', () => {
   let medicEntity = null
 
   beforeEach(() => {
-    medicEntity = new MedicEntity(ID, [])
+    medicEntity = new MedicEntity(
+      ID,
+      'Dr. Smith',
+      'XYZ456',
+      '1980-05-15',
+      'dr.smith@example.com',
+      99999998,
+      '789 Medical St',
+      2,
+      'Clinic A',
+      123,
+      'PRO123',
+      false,
+      []
+    )
   })
 
   it('should be defined', () => {

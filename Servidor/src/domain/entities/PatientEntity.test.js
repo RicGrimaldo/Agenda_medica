@@ -1,4 +1,5 @@
 const AppointmentModalities = require('../constants/AppointmentModalities')
+const Genres = require('../constants/Genres')
 const AppointmentDto = require('../dtos/AppointmentDto')
 const PatientEntity = require('./PatientEntity')
 
@@ -13,7 +14,20 @@ describe('Test patient entity', () => {
   let patientEntity = null
 
   beforeEach(() => {
-    patientEntity = new PatientEntity(ID, [])
+    patientEntity = new PatientEntity(
+      ID,
+      'John Doe',
+      'ABC123',
+      '1990-01-01',
+      'john.doe@example.com',
+      99999999,
+      '123 Main St',
+      22,
+      Genres.Maculine,
+      'password123',
+      false,
+      []
+    )
   })
 
   it('should be defined', () => {
