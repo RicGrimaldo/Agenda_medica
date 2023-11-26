@@ -4,7 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Dashboard, DashboardService } from 'src/app/servicios/dashboard.service';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
+import { MedicoService } from 'src/app/servicios/medico.service';
 
 @Component({
   selector: 'app-listadepacientes',
@@ -23,7 +23,7 @@ export class ListadepacientesComponent {
   citasGeneral:any=[];
 
   constructor(private dashboardService: DashboardService,
-    private usuariosService: UsuariosService,
+    private medicoService: MedicoService,
     private route: ActivatedRoute,
     private router: Router) {
     dashboardService.dashboardObservableData = {
@@ -40,7 +40,7 @@ export class ListadepacientesComponent {
      this.route.params.subscribe((params) => {
       if (params['idMedico']) {
         this.idMedico= params['idMedico'];
-        this.usuariosService.citasProgramadasMedico(this.idMedico).subscribe(
+        this.medicoService.citasProgramadasMedico(this.idMedico).subscribe(
           (response)=>{
             this.citas=response;
             this.dataSource = new MatTableDataSource(this.citas);

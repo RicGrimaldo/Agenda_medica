@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import {
-  FormBuilder,
   FormControl,
   FormGroup,
   Validators,
@@ -12,7 +11,7 @@ import {
   Dashboard,
   DashboardService,
 } from 'src/app/servicios/dashboard.service';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
+import { RecepcionistaService } from 'src/app/servicios/recepcionista.service';
 
 @Component({
   selector: 'app-adminsecretaria',
@@ -29,7 +28,7 @@ export class AdminsecretariaComponent {
   public dataDashboard$!: Observable<Dashboard>;
   constructor(
     dashboardService: DashboardService,
-    private usuariosService: UsuariosService,
+    private recepcionistaService: RecepcionistaService,
     private _snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router
@@ -78,7 +77,7 @@ export class AdminsecretariaComponent {
     this.recepcionista.bloqueadoRecepcionista===false? 0:1;
     console.log(this.recepcionista);
     if (this.idRecepcionista) {
-      this.usuariosService
+      this.recepcionistaService
         .editarRecepcionista(this.recepcionista, this.idRecepcionista)
         .subscribe(
           (response)=>{
@@ -91,7 +90,7 @@ export class AdminsecretariaComponent {
         );
       this.router.navigate(['/dashboard/administracion']);
     } else {
-      this.usuariosService.guardarRecepcionista(this.recepcionista).subscribe(
+      this.recepcionistaService.guardarRecepcionista(this.recepcionista).subscribe(
         (response)=>{
           this._snackBar.open(response, '', {
             duration: 1000,
@@ -109,7 +108,7 @@ export class AdminsecretariaComponent {
   }
 /* Función para obtener la información de un recepcionista */
   obtenerRecepcionista(id: any) {
-    this.usuariosService.obtenerRecepcionista(id).subscribe(
+    this.recepcionistaService.obtenerRecepcionista(id).subscribe(
       (response) => {
         this.recepcionista = response;
         console.log(this.recepcionista);

@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 import {
   AbstractControl,
-  FormBuilder,
   FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, map, startWith } from 'rxjs';
@@ -14,7 +12,7 @@ import {
   Dashboard,
   DashboardService,
 } from 'src/app/servicios/dashboard.service';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
+import { MedicoService } from 'src/app/servicios/medico.service';
 @Component({
   selector: 'app-admidoctor',
   templateUrl: './admidoctor.component.html',
@@ -30,7 +28,7 @@ export class AdmidoctorComponent {
   public dataDashboard$!: Observable<Dashboard>;
   constructor(
     dashboardService: DashboardService,
-    private usuariosService: UsuariosService,
+    private medicoService: MedicoService,
     private _snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router,
@@ -49,7 +47,7 @@ export class AdmidoctorComponent {
 
   ngOnInit():void{
     /* Se obtienen las especialidades */
-    this.usuariosService.obtenerEspecialidades().subscribe(
+    this.medicoService.obtenerEspecialidades().subscribe(
       (response)=>{
         this.options = response.map((especialidad:any)=> especialidad);
         console.log(this.options);
@@ -105,7 +103,7 @@ export class AdmidoctorComponent {
     this.medico.bloqueadoMedico===false? 0:1;
     this.medico.especialidadMedico=this.idEspecialidad;
     if (this.idMedico) {
-      this.usuariosService
+      this.medicoService
         .editarMedico(this.medico, this.idMedico)
         .subscribe(
           (response)=>{
@@ -122,7 +120,7 @@ export class AdmidoctorComponent {
         this.router.navigate(['/dashboard/administracion']);
       
     } else {
-      this.usuariosService.guardarMedico(this.medico).subscribe(
+      this.medicoService.guardarMedico(this.medico).subscribe(
         (response)=>{
           this._snackBar.open(response, '', {
             duration: 1000,
@@ -142,7 +140,7 @@ export class AdmidoctorComponent {
   }
 /* Función para obtener la información de un médico */
   obtenerMedico(id:any){
-    this.usuariosService.obtenerMedico(id).subscribe(
+    this.medicoService.obtenerMedico(id).subscribe(
       response => {
         this.medico = response;
         this.idEspecialidad=this.medico.especialidadMedico;

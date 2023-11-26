@@ -2,10 +2,11 @@ import { Component, ViewChild } from '@angular/core';
 import {  DashboardService } from 'src/app/servicios/dashboard.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { PacienteService } from 'src/app/servicios/paciente.service';
+import { CitaService } from 'src/app/servicios/cita.service';
 
 @Component({
   selector: 'app-historial-clinico',
@@ -23,7 +24,8 @@ export class HistorialClinicoComponent {
   nombrePaciente:any="";
   constructor(
     dashboardService: DashboardService,
-    private usuariosService: UsuariosService,
+    private pacienteService:PacienteService,
+    private citaService: CitaService,
     private route: ActivatedRoute,
     private location: Location,
     private router: Router,
@@ -46,7 +48,7 @@ export class HistorialClinicoComponent {
        this.route.params.subscribe((params) => {
         if (params['idPaciente']) {
           this.idPaciente = params['idPaciente'];
-         this.usuariosService.obtenerHistorialClinico(this.idPaciente).subscribe(
+         this.pacienteService.obtenerHistorialClinico(this.idPaciente).subscribe(
           (response)=>{
            this.citas = response;
            if(this.citas.length!=0){
@@ -96,7 +98,7 @@ export class HistorialClinicoComponent {
       this.paginator.firstPage();
     }
 
-    this.usuariosService.actualizarCita(cita, this.idCita).subscribe(
+    this.citaService.actualizarCita(cita, this.idCita).subscribe(
       (response)=>{
         console.log(response);
       }

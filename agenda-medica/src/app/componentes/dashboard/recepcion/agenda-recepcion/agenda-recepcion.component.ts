@@ -16,7 +16,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
+import { UsuariosService } from 'src/app/servicios/usuarios.service';
+import { MedicoService } from 'src/app/servicios/medico.service';
 @Component({
   selector: 'app-agenda-recepcion',
   templateUrl: './agenda-recepcion.component.html',
@@ -34,7 +35,8 @@ export class AgendaRecepcionComponent{
 
   constructor(dashboardService: DashboardService, 
     private fb: FormBuilder,
-    private usuariosService: UsuariosService,) {
+    private usuariosService: UsuariosService,
+    private medicoService: MedicoService) {
     dashboardService.dashboardObservableData = {
       menuActivo: 'agenda-recepcion',
     };
@@ -61,7 +63,7 @@ export class AgendaRecepcionComponent{
   ngOnInit() {
     //Autocompletado del campo médico
     
-   this.usuariosService.obtenerMedicos().subscribe(
+   this.medicoService.obtenerMedicos().subscribe(
     (response)=>{
       this.optionsMedicos = response.map((item:any)=> item);
       this.filteredMedicos =  this._setupFilterObservable(
@@ -99,7 +101,7 @@ export class AgendaRecepcionComponent{
     this.arreglo=[];
    
     this.idMedico=event.option.value.idMedico;
-    this.usuariosService.agendaMedico(this.idMedico).subscribe(
+    this.medicoService.agendaMedico(this.idMedico).subscribe(
       (response)=>{
         this.eventos=response;
        for(let i=0; i<this.eventos.length;i++){
@@ -114,7 +116,7 @@ export class AgendaRecepcionComponent{
        this.nombreMedico=event.option.value.nombreMedico;
       }
     )
-    this.usuariosService.agendaDisponibleMedico(this.idMedico).subscribe(
+    this.medicoService.agendaDisponibleMedico(this.idMedico).subscribe(
       (response)=>{
         this.eventos=response;
         for(let i=0; i<this.eventos.length;i++){

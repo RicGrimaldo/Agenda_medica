@@ -9,11 +9,14 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, map, startWith } from 'rxjs';
+import { CitaService } from 'src/app/servicios/cita.service';
 import {
   Dashboard,
   DashboardService,
 } from 'src/app/servicios/dashboard.service';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
+import { MedicoService } from 'src/app/servicios/medico.service';
+import { PacienteService } from 'src/app/servicios/paciente.service';
+import { UsuariosService } from 'src/app/servicios/usuarios.service';
 
 @Component({
   selector: 'app-formulario-cita',
@@ -38,6 +41,9 @@ export class FormularioCitaComponent {
   constructor(
     dashboardService: DashboardService,
     private usuariosService: UsuariosService,
+    private medicoService: MedicoService,
+    private pacienteService:PacienteService,
+    private citaService: CitaService,
     private _snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router,
@@ -79,7 +85,7 @@ export class FormularioCitaComponent {
       }else{
         //Cuando el usuario se encuentra en el perfil recepcionista, se obtienen los datos de todos los pacientes.
         this.perfil=2;
-        this.usuariosService.obtenerPacientes().subscribe(
+        this.pacienteService.obtenerPacientes().subscribe(
           (response)=>{
             this.autocompletadoPaciente=true;
             this.optionsPacientes = response.map((item:any)=> item);
@@ -92,14 +98,14 @@ export class FormularioCitaComponent {
       }
     });
     //Se obtienen todas las especialidades
-    this.usuariosService.obtenerEspecialidades().subscribe(
+    this.medicoService.obtenerEspecialidades().subscribe(
       (response)=>{
         this.especialidades=response;
 
       }
     )
       //Se obtienen todas los médicos
-    this.usuariosService.obtenerMedicos().subscribe(
+    this.medicoService.obtenerMedicos().subscribe(
 
       (response)=>{
         this.medicosFiltrados=response;
@@ -111,7 +117,7 @@ export class FormularioCitaComponent {
   }
    //Función para obtener los datos del paciente 
   obtenerPaciente(id:any, event:any){
-    this.usuariosService.obtenerPaciente(id).subscribe(
+    this.pacienteService.obtenerPaciente(id).subscribe(
       (response)=>{
         this.cita=response;
         if(event!=null){
@@ -135,7 +141,7 @@ export class FormularioCitaComponent {
         modalidad: this.cita.modalidad
       }
        //Se hace la reservación de la cita.
-      this.usuariosService.reservarCita(cita,this.cita.hora).subscribe(
+      this.citaService.reservarCita(cita,this.cita.hora).subscribe(
         
       );
       this._snackBar.open('Cita guardada', '', {
@@ -218,7 +224,7 @@ export class FormularioCitaComponent {
         fechaCita :event,
         idMedico : this.cita.idMedico
       }
-      this.usuariosService.citasDisponibles(datos).subscribe(
+      this.citaService.citasDisponibles(datos).subscribe(
         (response)=>{
           this.citasDisponibles=response;
           if(this.citasDisponibles.length==0 &&this.cita.fecha!=null){

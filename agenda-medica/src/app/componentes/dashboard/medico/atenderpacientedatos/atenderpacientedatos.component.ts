@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Dashboard, DashboardService } from 'src/app/servicios/dashboard.service';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
+import { UsuariosService } from 'src/app/servicios/usuarios.service';
 import { Location } from '@angular/common';
+import { PacienteService } from 'src/app/servicios/paciente.service';
 
 @Component({
   selector: 'app-atenderpacientedatos',
@@ -18,6 +19,7 @@ export class AtenderpacientedatosComponent {
   constructor(
     private dashboardService: DashboardService,
     private usuariosService: UsuariosService,
+    private pacienteService: PacienteService,
      private route: ActivatedRoute,
      private location: Location,
     private router: Router
@@ -33,7 +35,7 @@ export class AtenderpacientedatosComponent {
         this.route.params.subscribe((params) => {
           if (params['idPaciente']) {
             this.idPaciente= params['idPaciente'];
-            this.usuariosService.obtenerPaciente(this.idPaciente).subscribe(
+            this.pacienteService.obtenerPaciente(this.idPaciente).subscribe(
               (response)=>{
                 console.log(response);
                 this.paciente = response;
