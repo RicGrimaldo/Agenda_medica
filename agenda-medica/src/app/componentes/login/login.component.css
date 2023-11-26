@@ -55,11 +55,3 @@ td {
   background-color: var(--azul-claro);
   color: white;
 }
-
-@media (max-width: 540px) {
-  
-  img{
-    width: 97%;
-  }
-  
-}

@@ -55,3 +55,18 @@ th{
 mat-icon{
   display: flex;
 }
+@media (max-width: 470px) {
+  .col-4{
+    width: 100%;
+  }
+  .formulario{
+    height: 35%;
+    width: 100%;
+    }
+  
+  .tabla{
+    height: 65%;
+  width: 100%;
+  }
+ 
+}

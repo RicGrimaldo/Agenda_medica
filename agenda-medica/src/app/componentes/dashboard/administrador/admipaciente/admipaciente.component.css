@@ -8,28 +8,37 @@
     margin-top: 5%;
   }
 
-  @media (max-width: 1010px) {
-    .container{
-   
-      width: 60%;
-    }
-  }
-
-  @media (max-width: 845px) {
+  @media (max-width: 805px) {
     .container{
    
       width: 70%;
     }
   }
-  @media (max-width: 730px) {
+
+  @media (max-width: 720px) {
     .container{
    
-      width: 85%;
+      width: 80%;
     }
   }
-  @media (max-width: 600px) {
+  @media (max-width: 635px) {
     .container{
    
       width: 100%;
+      
+    }
+  }
+  @media (max-width: 510px) {
+    .col-4{
+      width: 50%;
+    }    
+  }
+
+  @media (max-width: 380px) {
+    .form-group{
+      width: 100%;
+    }
+    .container{
+      padding-bottom: 1rem;
     }
   }
