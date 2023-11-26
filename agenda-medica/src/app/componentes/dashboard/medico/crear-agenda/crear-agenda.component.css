@@ -21,9 +21,24 @@
       width: 70%;
     }
   }
+
   @media (max-width: 580px) {
     .container{
    
       width: 85%;
+     /*  padding-bottom: 1rem; */
+    }
+    /* .form-group{
+      width: 100%;
+    } */
+  }
+  @media (max-width: 440px) {
+    .container{
+   
+      width: 100%;
+      padding-bottom: 1rem;
+    }
+    .form-group{
+      width: 100%;
     }
   }
