@@ -24,36 +24,13 @@
   }
 }
 
-@media (max-width: 430px) {
+@media (max-width: 465px) {
   .container {
     width: 100%;
   }
-  label {
-    height: 40%;
-  }
-  input {
-    height: 60%;
-  }
-}
-@media (max-width: 414px) {
-  .container {
+  .form-group {
     width: 100%;
   }
-  label {
-    height: 50%;
-  }
-  input {
-    height: 50%;
-  }
+ 
 }
-@media (max-width: 375px) {
-  .container {
-    width: 100%;
-  }
-  label {
-    height: 55%;
-  }
-  input {
-    height: 45%;
-  }
-}
+
