@@ -42,15 +42,9 @@ mat-icon {
   margin-top: auto;
 }
 
-@media (max-width: 580) {
-  .contenedor_hijo {
-    height: 80%;
-    width: 95%;
-  }
-  
-}
 
-@media (max-width: 540px) {
+
+@media (max-width: 580px) {
   .form-group {
     width: 50%;
   }
@@ -70,7 +64,7 @@ mat-icon {
 }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 375px) {
   .form-group {
     width: 100%;
   }
