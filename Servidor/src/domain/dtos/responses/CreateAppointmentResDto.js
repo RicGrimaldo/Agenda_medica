@@ -1,7 +1,7 @@
 module.exports = class CreateAppointmentResDto {
-  constructor (status, ids) {
+  constructor (status, expAppointmentDto) {
     this._status = status
-    this._ids = ids
+    this._expAppointmentDto = expAppointmentDto
   }
 
   get status () {
@@ -12,11 +12,11 @@ module.exports = class CreateAppointmentResDto {
     this._status = status
   }
 
-  get ids () {
-    return this._ids
+  get expAppointmentDto () {
+    return this._expAppointmentDto
   }
 
-  set ids (ids) {
-    this._ids = ids
+  set expAppointmentDto (expAppointmentDto) {
+    this._expAppointmentDto = expAppointmentDto
   }
 }

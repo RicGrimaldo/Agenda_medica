@@ -36,13 +36,13 @@ describe('Test patient entity', () => {
 
   it('should create an appointment', () => {
     const SCHEDULE_ID = 12
-    patientEntity.createAppointment(GLOBAL_APPOINTMENT_DTOS, SCHEDULE_ID, AppointmentModalities.IN_PERSON)
+    patientEntity.addAppointment(GLOBAL_APPOINTMENT_DTOS, SCHEDULE_ID, AppointmentModalities.IN_PERSON)
     expect(patientEntity.appointmentDtos.length).toBe(1)
   })
 
   it('should create an appointment with the same data', () => {
     const SCHEDULE_ID = 12
-    patientEntity.createAppointment(GLOBAL_APPOINTMENT_DTOS, SCHEDULE_ID, AppointmentModalities.IN_PERSON)
+    patientEntity.addAppointment(GLOBAL_APPOINTMENT_DTOS, SCHEDULE_ID, AppointmentModalities.IN_PERSON)
     const appointmentDto = patientEntity.appointmentDtos[0]
     expect(appointmentDto.patientId).toBe(ID)
     expect(appointmentDto.scheduleId).toBe(SCHEDULE_ID)
@@ -51,6 +51,6 @@ describe('Test patient entity', () => {
 
   it('should not create an appointment if the schedule has been occupied', () => {
     const SCHEDULE_ID = 6
-    expect(() => { patientEntity.createAppointment(GLOBAL_APPOINTMENT_DTOS, SCHEDULE_ID, AppointmentModalities.IN_PERSON) }).toThrow(Error)
+    expect(() => { patientEntity.addAppointment(GLOBAL_APPOINTMENT_DTOS, SCHEDULE_ID, AppointmentModalities.IN_PERSON) }).toThrow(Error)
   })
 })

@@ -1,11 +1,11 @@
 const AppointmentDto = require('../AppointmentDto')
 
 module.exports = class ExpAppointmentDto extends AppointmentDto {
-  constructor (id, patientId, scheduleId, modality, patientDto, scheduleDto, medicDto) {
+  constructor (id, patientId, scheduleId, modality, patientDto, scheduleDto, expMedicDto) {
     super(id, patientId, scheduleId, modality)
     this._patientDto = patientDto
     this._scheduleDto = scheduleDto
-    this._medicDto = medicDto
+    this._expMedicDto = expMedicDto
   }
 
   get patientDto () {
@@ -24,11 +24,11 @@ module.exports = class ExpAppointmentDto extends AppointmentDto {
     this._scheduleDto = scheduleDto
   }
 
-  get medicDto () {
-    return this._medicDto
+  get expMedicDto () {
+    return this._expMedicDto
   }
 
-  set medicDto (medicDto) {
-    this._medicDto = medicDto
+  set expMedicDto (expMedicDto) {
+    this._expMedicDto = expMedicDto
   }
 }

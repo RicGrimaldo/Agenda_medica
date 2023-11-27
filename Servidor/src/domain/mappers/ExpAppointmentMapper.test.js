@@ -9,6 +9,11 @@ const AppointmentModalities = require('../constants/AppointmentModalities')
 const AppointmentDto = require('../dtos/AppointmentDto')
 const PatientDto = require('../dtos/entities/PatientDto')
 const MedicDto = require('../dtos/entities/MedicDto')
+const SpecialityDto = require('../dtos/SpecialityDto')
+const PatientMapper = require('./PatientMapper')
+const ExpMedicMapper = require('./ExpMedicMapper')
+const ExpMedicDto = require('../dtos/expanded/ExpMedicDto')
+const MedicMapper = require('./MedicMapper')
 
 describe('Test PatientMapper', () => {
   const expAppointmentMapper = new ExpAppointmentMapper()
@@ -41,13 +46,14 @@ describe('Test PatientMapper', () => {
   }
   const generateScheduleDto = () => {
     const ID = 1
-    const startDateTime = dayjs('20-02-2002 02:02:02', 'DD-MM-YYYY HH:mm:ss')
-    const endDateTime = startDateTime.add(20, 'minutes')
+    const START_DATE_TIME = dayjs('20-02-2002 02:02:02', 'DD-MM-YYYY HH:mm:ss')
+    const END_DATE_TIME = START_DATE_TIME.add(20, 'minutes')
+    const MEDIC_ID = 1
     return new ScheduleDto(
       ID,
-      startDateTime.format(),
-      endDateTime.format(),
-      1
+      START_DATE_TIME.format(),
+      END_DATE_TIME.format(),
+      MEDIC_ID
     )
   }
   const generateMedicEntity = () => {
@@ -91,11 +97,18 @@ describe('Test PatientMapper', () => {
       MODALITY
     )
   }
-  const patientEntity = generatePatientEntity()
+  const generateSpecialityDto = () => {
+    const ID = 1
+    const ACRONYM = 'S'
+    const NAME = 'Speciality'
+    return new SpecialityDto(ID, ACRONYM, NAME)
+  }
+  const patientDto = new PatientMapper().format(generatePatientEntity())
   const scheduleDto = generateScheduleDto()
-  const medicEntity = generateMedicEntity()
+  const medicDto = new MedicMapper().format(generateMedicEntity())
+  const expMedicDto = new ExpMedicMapper().format(medicDto, generateSpecialityDto())
   const appointmentDto = generateAppointmentDto()
-  const expAppointmentDto = expAppointmentMapper.format(patientEntity, scheduleDto, medicEntity, appointmentDto)
+  const expAppointmentDto = expAppointmentMapper.format(patientDto, scheduleDto, expMedicDto, appointmentDto)
 
   it('should be defined', () => {
     expect(expAppointmentMapper).toBeDefined()
@@ -112,6 +125,6 @@ describe('Test PatientMapper', () => {
     expect(expAppointmentDto.modality).toBe(appointmentDto.modality)
     expect(expAppointmentDto.patientDto instanceof PatientDto).toBeTruthy()
     expect(expAppointmentDto.scheduleDto instanceof ScheduleDto).toBeTruthy()
-    expect(expAppointmentDto.medicDto instanceof MedicDto).toBeTruthy()
+    expect(expAppointmentDto.expMedicDto instanceof ExpMedicDto).toBeTruthy()
   })
 })

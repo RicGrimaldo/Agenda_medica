@@ -1,17 +1,15 @@
 const ExpAppointmentDto = require('../dtos/expanded/ExpAppointmentDto')
-const MedicMapper = require('./MedicMapper')
-const PatientMapper = require('./PatientMapper')
 
 module.exports = class ExpAppointmentMapper {
-  format (patientEntity, scheduleDto, medicEntity, appointmentDto) {
+  format (patientDto, scheduleDto, expMedicDto, appointmentDto) {
     return new ExpAppointmentDto(
       appointmentDto.id,
       appointmentDto.patientId,
       appointmentDto.scheduleId,
       appointmentDto.modality,
-      new PatientMapper().format(patientEntity),
+      patientDto,
       scheduleDto,
-      new MedicMapper().format(medicEntity)
+      expMedicDto
     )
   }
 }
