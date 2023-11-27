@@ -76,6 +76,9 @@ export class BuscadorGeneralComponent {
 /* Función para mostrar usuarios por su tipo */
   onSelectChange(tipo: string) {
     this.usuarios = [];
+    if (!this.recuperados.medicos) {
+      return;
+    }
     switch (tipo) {
       case '1':
         let medico = this.recuperados.medicos;

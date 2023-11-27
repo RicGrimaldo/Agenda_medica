@@ -18,7 +18,7 @@ export class CitasProgramadasComponent {
   idCita:any;
   indice: any;
   form: FormGroup;
-  medicos:any={};
+  medicos:any=[];
   idMedico:any;
   curpPaciente:any;
   citasGeneral:any=[];
@@ -43,24 +43,25 @@ export class CitasProgramadasComponent {
   ngOnInit() {
     /* Se obtienen las citas programadas entre los pacientes y médicos */
     this.usuariosService.citasProgramadas().subscribe(
-    (response)=>{
-      console.log(response);
-      this.citas = response;
-      this.citasGeneral=response;
-      this.dataSource = new MatTableDataSource(this.citas);
-      this.dataSource.paginator = this.paginator;
-      this.paginator.firstPage();
-    }
+      (response) => {
+        console.log("Respuesta: ")
+        console.log(response);
+        this.citas = response;
+        this.citasGeneral = response;
+        this.dataSource = new MatTableDataSource(this.citas);
+        this.dataSource.paginator = this.paginator;
+        this.paginator.firstPage();
+      }
     );
+  
     /* Se obtiene todos los medicos */
     this.usuariosService.obtenerMedicos().subscribe(
-
-      (response)=>{
-        this.medicos=response;
+      (response) => {
+        this.medicos = response;
       }
-    )
-  
+    );
   }
+  
 
 
   
@@ -69,7 +70,9 @@ export class CitasProgramadasComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator;
+    }
   }
    //Filtrado por idMedico y la CURP del paciente
   submit(){
