@@ -1,15 +1,16 @@
 const dayjs = require('dayjs')
-const ScheduleDto = require('../../dtos/ScheduleDto')
-const PatientEntity = require('../../entities/PatientEntity')
-const PatientCanCreateAppointmentsUseCase = require('./PatientCanCreateAppointments')
-const AppointmentDto = require('../../dtos/AppointmentDto')
-const AppointmentModalities = require('../../constants/AppointmentModalities')
+const customParseFormat = require('dayjs/plugin/customParseFormat')
+dayjs.extend(customParseFormat)
 const Genres = require('../../constants/Genres')
 const MedicEntity = require('../../entities/MedicEntity')
+const PatientEntity = require('../../entities/PatientEntity')
+const UserCanRequestIncomingAppointmentsUseCase = require('./UserCanRequestIncomingAppointments')
+const ScheduleDto = require('../../dtos/ScheduleDto')
 const SpecialityDto = require('../../dtos/SpecialityDto')
-const ExpMedicMapper = require('../../mappers/ExpMedicMapper')
-const MedicDto = require('../../dtos/entities/MedicDto')
 const MedicMapper = require('../../mappers/MedicMapper')
+const ExpMedicMapper = require('../../mappers/ExpMedicMapper')
+const AppointmentDto = require('../../dtos/AppointmentDto')
+const ExpAppointmentDto = require('../../dtos/expanded/ExpAppointmentDto')
 
 class FakePatientStorage {
   #patientEntities
@@ -58,17 +59,9 @@ class FakeAppointmentStorage {
     return this.#appointmentDtos
   }
 
-  async getAll () {
+  async getIncoming () {
     return new Promise((resolve) => {
       resolve(this.appointmentDtos)
-    })
-  }
-
-  async createAppointments (patientId, appointmentDtos) {
-    return new Promise((resolve) => {
-      resolve(
-        patientId ? appointmentDtos.filter((appointmentDto) => !appointmentDto.id).map((_, index) => index + 100) : []
-      )
     })
   }
 }
@@ -91,12 +84,8 @@ class FakeMedicStorage {
   }
 }
 
-describe('Test patient can create appointments use case', () => {
-  const PATIENT_ID = 1
-  const SCHEDULE_ID = 1
-  const SECOND_SCHEDULE_ID = 2
-  const MEDIC_ID = 1
-  let patientCanCreateAppointmentsUC = null
+describe('Test UserCanRequestIncomingAppointmentsUseCase', () => {
+  let userCanRequestIncomingAppointmentsUseCase = null
 
   const generatePatientEntity = () => {
     const ID = 1
@@ -158,8 +147,8 @@ describe('Test patient can create appointments use case', () => {
     const START_DATE_TIME = dayjs('20-02-2002 02:02:02', 'DD-MM-YYYY HH:mm:ss')
     const scheduleStorage = new FakeScheduleStorage([])
     const scheduleDtos = [
-      { id: SCHEDULE_ID, startDateTime: START_DATE_TIME.format(), endDateTime: START_DATE_TIME.add(30, 'minutes').format(), medicId: MEDIC_ID },
-      { id: SECOND_SCHEDULE_ID, startDateTime: START_DATE_TIME.add(30, 'minutes').format(), endDateTime: START_DATE_TIME.add(60, 'minutes').format(), medicId: MEDIC_ID }
+      { id: 1, startDateTime: START_DATE_TIME.format(), endDateTime: START_DATE_TIME.add(30, 'minutes').format(), medicId: 1 },
+      { id: 2, startDateTime: START_DATE_TIME.add(30, 'minutes').format(), endDateTime: START_DATE_TIME.add(60, 'minutes').format(), medicId: 1 }
     ]
     scheduleDtos.forEach((scheduleDto) => {
       scheduleStorage.scheduleDtos.push(new ScheduleDto(scheduleDto.id, scheduleDto.startDateTime, scheduleDto.endDateTime, scheduleDto.medicId))
@@ -176,11 +165,11 @@ describe('Test patient can create appointments use case', () => {
   beforeEach(() => {
     const patientStorage = new FakePatientStorage([generatePatientEntity()])
     const scheduleStorage = generateScheduleStorage()
-    const appointmentStorage = new FakeAppointmentStorage([new AppointmentDto(1, PATIENT_ID + 1, SCHEDULE_ID + 1)])
+    const appointmentStorage = new FakeAppointmentStorage([new AppointmentDto(1, 1, 1)])
     const medicDto = new MedicMapper().format(generateMedicEntity())
     const expMedicDto = new ExpMedicMapper().format(medicDto, generateSpecialityDto())
     const medicStorage = new FakeMedicStorage([expMedicDto])
-    patientCanCreateAppointmentsUC = new PatientCanCreateAppointmentsUseCase(
+    userCanRequestIncomingAppointmentsUseCase = new UserCanRequestIncomingAppointmentsUseCase(
       patientStorage,
       scheduleStorage,
       appointmentStorage,
@@ -189,32 +178,13 @@ describe('Test patient can create appointments use case', () => {
   })
 
   it('should be defined', () => {
-    expect(patientCanCreateAppointmentsUC).toBeDefined()
+    expect(userCanRequestIncomingAppointmentsUseCase).toBeDefined()
   })
 
-  it('should create appointments', async () => {
-    const result = await patientCanCreateAppointmentsUC.createAppointment(PATIENT_ID, SCHEDULE_ID, AppointmentModalities.IN_PERSON)
-    expect(result.status).toBeTruthy()
-    expect(result.expAppointmentDto).toBeDefined()
-  })
-
-  it('should not create dupplicated appointments', async () => {
-    const result = await patientCanCreateAppointmentsUC.createAppointment(PATIENT_ID, SECOND_SCHEDULE_ID, AppointmentModalities.IN_PERSON)
-    expect(result.status).toBeFalsy()
-    expect(result.expAppointmentDto).toBeUndefined()
-  })
-
-  it('should validate if the patient exists', async () => {
-    const INVALID_PATIENT_ID = PATIENT_ID + 100
-    const result = await patientCanCreateAppointmentsUC.createAppointment(INVALID_PATIENT_ID, SCHEDULE_ID, AppointmentModalities.IN_PERSON)
-    expect(result.status).toBeFalsy()
-    expect(result.expAppointmentDto).toBeUndefined()
-  })
-
-  it('should validate if the schedule exists', async () => {
-    const INVALID_SCHEDULE_ID = SCHEDULE_ID + 100
-    const result = await patientCanCreateAppointmentsUC.createAppointment(PATIENT_ID, INVALID_SCHEDULE_ID, AppointmentModalities.IN_PERSON)
-    expect(result.status).toBeFalsy()
-    expect(result.expAppointmentDto).toBeUndefined()
+  it('should return incoming appointments', async () => {
+    const result = await userCanRequestIncomingAppointmentsUseCase.getIncomingAppointments()
+    expect(result).toBeDefined()
+    expect(result.length).toBe(1)
+    expect(result[0] instanceof ExpAppointmentDto).toBeTruthy()
   })
 })

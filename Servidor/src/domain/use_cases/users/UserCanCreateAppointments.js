@@ -2,7 +2,7 @@ const CreateAppointmentResDto = require('../../dtos/responses/CreateAppointmentR
 const ExpAppointmentMapper = require('../../mappers/ExpAppointmentMapper')
 const PatientMapper = require('../../mappers/PatientMapper')
 
-module.exports = class PatientCanCreateAppointmentsUseCase {
+module.exports = class UserCanCreateAppointmentsUseCase {
   #patientStorage
   #scheduleStorage
   #appointmentStorage
@@ -37,7 +37,7 @@ module.exports = class PatientCanCreateAppointmentsUseCase {
 
     if (patientEntity && scheduleDto) {
       try {
-        patientEntity.addAppointment(await this.appointmentStorage.getAll(), scheduleDto.id, modalityId)
+        patientEntity.addAppointment(await this.appointmentStorage.getIncoming(), scheduleDto.id, modalityId)
         const appointmentDto = patientEntity.appointmentDtos[patientEntity.appointmentDtos.length - 1]
         const ids = await this.appointmentStorage.createAppointments(patientEntity.id, [appointmentDto])
         if (ids.length > 0) {
