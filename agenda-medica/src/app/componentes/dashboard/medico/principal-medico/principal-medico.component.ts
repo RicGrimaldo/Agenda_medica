@@ -6,8 +6,9 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import esLocale from '@fullcalendar/core/locales/es';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
+import { UsuariosService } from 'src/app/servicios/usuarios.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MedicoService } from 'src/app/servicios/medico.service';
 
 @Component({
   selector: 'app-principal-medico',
@@ -22,6 +23,7 @@ export class PrincipalMedicoComponent {
   constructor(
     private dashboardService: DashboardService,
     private usuariosService: UsuariosService,
+    private medicoService: MedicoService,
     private route: ActivatedRoute,
     private router: Router,) {
     dashboardService.dashboardObservableData = {
@@ -35,7 +37,7 @@ export class PrincipalMedicoComponent {
   this.route.params.subscribe((params) => {
     if (params['idMedico']) {
       this.idMedico = params['idMedico'];
-      this.usuariosService.agendaMedico(this.idMedico).subscribe(
+      this.medicoService.agendaMedico(this.idMedico).subscribe(
         (response)=>{
           this.eventos=response;
          for(let i=0; i<this.eventos.length;i++){

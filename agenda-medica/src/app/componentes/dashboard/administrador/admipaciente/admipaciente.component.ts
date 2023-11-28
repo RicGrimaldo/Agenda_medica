@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import {
-  FormBuilder,
   FormControl,
   FormGroup,
   Validators,
@@ -12,7 +11,7 @@ import {
   Dashboard,
   DashboardService,
 } from 'src/app/servicios/dashboard.service';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
+import { PacienteService } from 'src/app/servicios/paciente.service';
 
 @Component({
   selector: 'app-admipaciente',
@@ -29,7 +28,7 @@ export class AdmipacienteComponent {
   public dataDashboard$!: Observable<Dashboard>;
   constructor(
     dashboardService: DashboardService,
-    private usuariosService: UsuariosService,
+    private pacienteService: PacienteService,
     private _snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router
@@ -85,7 +84,7 @@ export class AdmipacienteComponent {
     console.log(this.idPaciente);
     this.paciente.bloqueadoPaciente===false? 0:1;
     if (this.idPaciente) {
-      this.usuariosService
+      this.pacienteService
         .editarPaciente(this.paciente, this.idPaciente)
         .subscribe(
           (response)=>{
@@ -99,7 +98,7 @@ export class AdmipacienteComponent {
         );
       this.router.navigate(['/dashboard/administracion']);
     } else {
-      this.usuariosService.guardarPaciente(this.paciente).subscribe(
+      this.pacienteService.guardarPaciente(this.paciente).subscribe(
         (response)=>{
           this._snackBar.open(response, '', {
             duration: 1000,
@@ -116,7 +115,7 @@ export class AdmipacienteComponent {
   }
 /* Función para obtener la información de un paciente */
   obtenerPaciente(id:any){
-    this.usuariosService.obtenerPaciente(id).subscribe(
+    this.pacienteService.obtenerPaciente(id).subscribe(
       response => {
         this.paciente = response;
         console.log(this.paciente);

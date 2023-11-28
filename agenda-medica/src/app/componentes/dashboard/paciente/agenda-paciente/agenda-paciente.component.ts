@@ -4,13 +4,11 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import {
-  Dashboard,
   DashboardService,
 } from 'src/app/servicios/dashboard.service';
 import esLocale from '@fullcalendar/core/locales/es';
-import { Observable } from 'rxjs';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { PacienteService } from 'src/app/servicios/paciente.service';
 
 @Component({
   selector: 'app-agenda-paciente',
@@ -23,7 +21,7 @@ export class AgendaPacienteComponent implements OnInit {
   arreglo:any=[];
   constructor(
     private dashboardService: DashboardService,
-    private usuariosService: UsuariosService,
+    private pacienteService: PacienteService,
     private route: ActivatedRoute
   ) {
     dashboardService.dashboardObservableData = {
@@ -35,7 +33,7 @@ export class AgendaPacienteComponent implements OnInit {
     this.route.params.subscribe((params) => {
       if (params['idPaciente']) {
         this.idPaciente = params['idPaciente'];
-        this.usuariosService.agendaPaciente(params['idPaciente']).subscribe(
+        this.pacienteService.agendaPaciente(params['idPaciente']).subscribe(
           (response)=>{
             this.eventos=response;
            for(let i=0; i<this.eventos.length;i++){

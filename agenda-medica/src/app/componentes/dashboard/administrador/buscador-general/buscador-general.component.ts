@@ -14,7 +14,10 @@ import {
   Dashboard,
   DashboardService,
 } from 'src/app/servicios/dashboard.service';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
+import { MedicoService } from 'src/app/servicios/medico.service';
+import { PacienteService } from 'src/app/servicios/paciente.service';
+import { RecepcionistaService } from 'src/app/servicios/recepcionista.service';
+import { UsuariosService } from 'src/app/servicios/usuarios.service';
 
 @Component({
   selector: 'app-buscador-general',
@@ -44,6 +47,9 @@ export class BuscadorGeneralComponent {
   constructor(
     dashboardService: DashboardService,
     private usuariosService: UsuariosService,
+    private recepcionistaService: RecepcionistaService,
+    private medicoService: MedicoService,
+    private pacienteService: PacienteService,
     private _snackBar: MatSnackBar,
     private router: Router
   ) {
@@ -76,6 +82,9 @@ export class BuscadorGeneralComponent {
 /* Función para mostrar usuarios por su tipo */
   onSelectChange(tipo: string) {
     this.usuarios = [];
+    if (!this.recuperados.medicos) {
+      return;
+    }
     switch (tipo) {
       case '1':
         let medico = this.recuperados.medicos;
@@ -138,7 +147,7 @@ export class BuscadorGeneralComponent {
           this.recuperados['medicos'].splice(this.indice, 1);
         }
         this.onSelectChange('1');
-        this.usuariosService.eliminarMedico(this.usuarioPorEliminar).subscribe(
+        this.medicoService.eliminarMedico(this.usuarioPorEliminar).subscribe(
           (response) => {
             console.log(response);
           },
@@ -159,7 +168,7 @@ export class BuscadorGeneralComponent {
           this.recuperados['pacientes'].splice(this.indice, 1);
         }
         this.onSelectChange('2');
-        this.usuariosService
+        this.pacienteService
           .eliminarPaciente(this.usuarioPorEliminar)
           .subscribe(
             (response) => {
@@ -182,7 +191,7 @@ export class BuscadorGeneralComponent {
           this.recuperados['recepcionistas'].splice(this.indice, 1);
         }
         this.onSelectChange('3');
-        this.usuariosService
+        this.recepcionistaService
           .eliminarRecepcionista(this.usuarioPorEliminar)
           .subscribe(
             (response) => {

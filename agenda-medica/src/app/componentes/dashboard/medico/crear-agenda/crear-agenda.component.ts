@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Dashboard, DashboardService } from 'src/app/servicios/dashboard.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CitaService } from 'src/app/servicios/cita.service';
 
 @Component({
   selector: 'app-crear-agenda',
@@ -16,7 +16,9 @@ export class CrearAgendaComponent {
   agenda: any = {};
   idMedico:any;
 
-  constructor(private dashboardService: DashboardService, private usuariosService: UsuariosService,private _snackBar: MatSnackBar,) {
+  constructor(private dashboardService: DashboardService, 
+    private citaService: CitaService,
+    private _snackBar: MatSnackBar,) {
     dashboardService.dashboardObservableData = {
       menuActivo: 'crear-agenda'
     };
@@ -38,7 +40,7 @@ export class CrearAgendaComponent {
   }
 /* Función para crear citas con el id del médico */
   formSubmit(){
-      this.usuariosService.crearCitas(this.idMedico, this.agenda).subscribe(
+      this.citaService.crearCitas(this.idMedico, this.agenda).subscribe(
         (response)=>{
           this._snackBar.open(response, '', {
             duration: 2000,

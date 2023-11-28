@@ -1,11 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl, Validators, AbstractControl } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
-import { Observable, startWith, map } from 'rxjs';
+import { CitaService } from 'src/app/servicios/cita.service';
 import { DashboardService } from 'src/app/servicios/dashboard.service';
-import { UsuariosService } from 'src/app/servicios/usuarios/usuarios.service';
+import { MedicoService } from 'src/app/servicios/medico.service';
 
 @Component({
   selector: 'app-citas-programadas',
@@ -18,13 +18,14 @@ export class CitasProgramadasComponent {
   idCita:any;
   indice: any;
   form: FormGroup;
-  medicos:any={};
+  medicos:any=[];
   idMedico:any;
   curpPaciente:any;
   citasGeneral:any=[];
   constructor(dashboardService: DashboardService,
      private fb: FormBuilder,
-     private usuariosService: UsuariosService,
+     private citaService: CitaService,
+     private medicoService:MedicoService,
      private _snackBar: MatSnackBar,) {
     dashboardService.dashboardObservableData = {
       menuActivo: 'citas-programadas',
@@ -42,7 +43,7 @@ export class CitasProgramadasComponent {
   
   ngOnInit() {
     /* Se obtienen las citas programadas entre los pacientes y médicos */
-    this.usuariosService.citasProgramadas().subscribe(
+    this.citaService.citasProgramadas().subscribe(
     (response)=>{
       console.log(response);
       this.citas = response;
@@ -52,15 +53,16 @@ export class CitasProgramadasComponent {
       this.paginator.firstPage();
     }
     );
+  
     /* Se obtiene todos los medicos */
-    this.usuariosService.obtenerMedicos().subscribe(
+    this.medicoService.obtenerMedicos().subscribe(
 
       (response)=>{
         this.medicos=response;
       }
-    )
-  
+    );
   }
+  
 
 
   
@@ -69,7 +71,9 @@ export class CitasProgramadasComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator;
+    }
   }
    //Filtrado por idMedico y la CURP del paciente
   submit(){
@@ -118,7 +122,7 @@ export class CitasProgramadasComponent {
     }
 
 /* Se actualiza la cita cancelada */
-    this.usuariosService.actualizarCita(cita, this.idCita).subscribe(
+    this.citaService.actualizarCita(cita, this.idCita).subscribe(
 
     )
 
