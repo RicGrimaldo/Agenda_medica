@@ -1,20 +1,26 @@
 <div class="parent_div">
-  <div class="child_div">
-    <div class="_side-branding_ul4pwa">
-      <img src="/assets/img/logo.svg" alt="Nimbo" class="_logo_ul4pwa" />
-      <img src="/assets/img/dr-login.svg" alt="Nimbo" class="_image_ul4pwa" />
+  <div class="child_div row">
+    <div class="col-md-5 mb-3">
+      <img src="/assets/img/logo.svg" alt="Nimbo" class="mb-3" />
+      <img src="/assets/img/dr-login.svg" alt="Nimbo" class="w-100" />
     </div>
-    <div>
-      <form [formGroup]="form" class="example-form" (ngSubmit)="onSubmitLogin()">
-        <mat-form-field class="example-full-width">
-          <mat-label>Usuario</mat-label>
-          <input type="text" matInput  autocomplete="off" formControlName="usuario"/>
-        </mat-form-field>
-        <mat-form-field class="example-full-width">
-          <mat-label>Contraseña</mat-label>
-          <input  type="password" matInput autocomplete="off" formControlName="password" />
-        </mat-form-field>
-        <button type="submit" class="button" mat-raised-button [disabled]="form.invalid">INICIAR SESIÓN</button>
+    <div class="col-md-7">
+      <form [formGroup]="form" class="login-form row" (ngSubmit)="onSubmitLogin()">
+        <div class="col-md-12">
+          <mat-form-field class="w-100">
+            <mat-label>Usuario</mat-label>
+            <input type="text" matInput  autocomplete="off" formControlName="usuario"/>
+          </mat-form-field>
+        </div>
+        <div class="col-md-12">
+          <mat-form-field class="w-100">
+            <mat-label>Contraseña</mat-label>
+            <input  type="password" matInput autocomplete="off" formControlName="password" />
+          </mat-form-field>
+        </div>
+        <div class="col-md-12">
+          <button type="submit" class="button" mat-raised-button [disabled]="form.invalid">INICIAR SESIÓN</button>
+        </div>
       </form>
     </div>
   </div>

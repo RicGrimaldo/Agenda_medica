@@ -1,7 +1,7 @@
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const loginController = {}
-const mysql = require('mysql')
+const mysql = require('mysql2')
 const bcrypt = require('bcrypt')
 /**
  * Valida las credenciales para iniciar sesión

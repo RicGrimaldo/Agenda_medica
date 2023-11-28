@@ -21,7 +21,7 @@
     "express-myconnection": "^1.0.4",
     "html-pdf-node": "^1.0.8",
     "jsonwebtoken": "^9.0.0",
-    "mysql": "^2.18.1",
+    "mysql2": "^3.6.3",
     "nodemailer": "^6.9.2",
     "qrcode": "^1.5.3"
   },

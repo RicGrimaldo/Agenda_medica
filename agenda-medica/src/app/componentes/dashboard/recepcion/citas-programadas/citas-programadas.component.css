@@ -1,62 +1,85 @@
-.contenedor-button{
-    position: relative;
-}
-.contenedor-button button{
-    position: absolute;
-    bottom: 0;
-}
-.contenedor_padre{
-    width: 100%;
-    justify-content: center; /* centra horizontalmente */
-    align-items: center; /* centra verticalmente */
-    height: 85.9%;
-    display: flex; 
-   
-  }
-  
-  .contenedor_hijo{
-   
-    height: 90%;
-    width: 80%;
-  }
-  .contenedor_hijo .formulario{
-    height: 18%;
-    width: 100%;
-    }
-  
-    .contenedor_hijo .tabla{
-    height: 82%;
+.contenedor_padre {
   width: 100%;
+  justify-content: center; /* centra horizontalmente */
+  align-items: center; /* centra verticalmente */
+  height: 85.9%;
+  display: flex;
+}
+
+.contenedor_hijo {
+  height: 90%;
+  width: 80%;
+}
+.contenedor_hijo .formulario {
+  height: 18%;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.contenedor_hijo .tabla {
+  height: 82%;
+  width: 100%;
+}
+
+.mat-mdc-table .mdc-data-table__header-row {
+  background-color: var(--azul-marino);
+}
+th {
+  color: white;
+  text-align: center;
+}
+.opciones {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+mat-icon {
+  display: flex;
+}
+
+.contenedor-button {
+  margin-top: auto;
+}
+
+
+
+@media (max-width: 580px) {
+  .form-group {
+    width: 50%;
   }
-  
-  .example-viewport {
+  .contenedor-button {
+    margin-top: 1rem;
+  }
+
+.contenedor_hijo .formulario {
+  height: 25%;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.contenedor_hijo .tabla {
+  height: 75%;
+  width: 100%;
+}
+}
+
+@media (max-width: 375px) {
+  .form-group {
     width: 100%;
-    height: 80%;
-   
   }
-  
-  /* 
-  td{
-    text-align: center; 
-    vertical-align: middle;
-  } */
-  
-  .mat-mdc-table .mdc-data-table__header-row {
-  
-    background-color: var(--azul-marino);
-  
+  .contenedor-button {
+    margin-top: 1rem;
   }
-  th{
-    color: white;
-    text-align: center;
-  }
-  .opciones{
-    
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
-  
-  mat-icon{
-    display: flex;
-  }
+
+.contenedor_hijo .formulario {
+  height: 35%;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.contenedor_hijo .tabla {
+  height: 65%;
+  width: 100%;
+}
+}

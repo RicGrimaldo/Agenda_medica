@@ -1,21 +1,118 @@
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-
-  :root {
-    --azul-rey: #0A1C40;
-    --azul-marino: #112540;
-    --azul-claro: #0176fe;
-    --azul-cielo: #88C1F2;
-    --negro: #0D0D0D;
-  }
-  .mat-step-header .mat-step-icon-selected, .mat-step-header .mat-step-icon-state-done, .mat-step-header .mat-step-icon-state-edit {
-    background-color: var(--azul-rey);
-    color: #fff;
+html,
+body {
+  height: 100%;
 }
-a{
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+:root {
+  --azul-rey: #0a1c40;
+  --azul-marino: #112540;
+  --azul-claro: #0176fe;
+  --azul-cielo: #88c1f2;
+  --negro: #0d0d0d;
+  --navbar-bg-color: #0a1b43;
+}
+.mat-step-header .mat-step-icon-selected,
+.mat-step-header .mat-step-icon-state-done,
+.mat-step-header .mat-step-icon-state-edit {
+  background-color: var(--azul-rey);
+  color: #fff;
+}
+
+/*Navbar Styles*/
+.bg-navbar {
+  background-color: var(--navbar-bg-color);
+}
+
+.nav-link:hover,
+.log-out-icon:hover {
+  color: rgba(255, 255, 255, 0.767);
+  text-shadow: 1px 1px 0px #000;
+}
+
+.nav-link,
+.nav-link:focus,
+.log-out-icon:focus {
+  text-decoration: none;
+  color: white;
+}
+
+.nav-item {
+  font-size: 20px;
+}
+
+@media (max-width: 990px) {
+  .nav-item {
+    font-size: 17px;
+    margin-bottom: 0.5rem;
+  }
+  .exit-btn-nav {
+    text-align: left !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .nav-item {
+    font-size: 15px;
+    margin-bottom: 0.5rem;
+  }
+  .exit-btn-nav {
+    text-align: left !important;
+  }
+}
+
+.logo {
+  width: 10rem;
+  padding-left: 5%;
+}
+
+.image-container {
+  width: 20%;
+}
+
+.active {
+  text-align: -webkit-center;
+  color: white;
+  background-color: var(--azul-claro);
+  border-radius: 12px;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 4px;
+}
+
+.log-out-container {
+  width: 20%;
+  text-align: center;
+}
+
+.log-out-link {
+  width: 50%;
+  text-align: right;
+}
+
+.log-out-icon {
+  color: white;
+  padding-right: 5%;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+.calendario a {
   color: black;
 }
 
+@media (max-width: 667px) {
+  .fc .fc-toolbar.fc-header-toolbar {
+    display: block;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+}

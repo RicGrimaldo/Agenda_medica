@@ -1,86 +1,137 @@
 <div class="contenedor_padre">
- 
   <div class="contenedor_hijo">
-    <ng-container *ngIf="rol==2">
-      <div class="titulo">  <h1>Historial Clínico del Paciente{{nombrePaciente}}</h1><button class="btn btn-secondary" type="button" (click)="regresar()">Regresar</button></div>
-     </ng-container>
-     <ng-container *ngIf="rol==1">
-      <div class="titulo">  <h1>Historial Clínico del Paciente{{nombrePaciente}}</h1><button class="btn btn-secondary" type="button" (click)="descargar()">Descargar</button></div>
-     </ng-container>
-    <div class="mat-elevation-z8 ">
-      <!-- Tabla de citas -->
-      <table mat-table [dataSource]="dataSource" >
+    <div class="header">
+
+      <ng-container *ngIf="rol == 2">
+        <div class="titulo">
+          <h1>Historial Clínico del Paciente{{ nombrePaciente }}</h1>
+          <button class="btn btn-secondary" type="button" (click)="regresar()">
+            Regresar
+          </button>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="rol == 1">
+        <div class="titulo">
+          <h1>Historial Clínico del Paciente{{ nombrePaciente }}</h1>
+          <button class="btn btn-secondary" type="button" (click)="descargar()">
+            Descargar
+          </button>
+        </div>
+      </ng-container>
+    </div>
   
+    <div class="mat-elevation-z8 table-responsive">
+      <!-- Tabla de citas -->
+      <table mat-table [dataSource]="dataSource">
         <ng-container matColumnDef="fecha">
-          <th mat-header-cell *matHeaderCellDef > Fecha </th>
-          <td mat-cell *matCellDef="let element"> {{element.fecha}} </td>
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let element">{{ element.fecha }}</td>
         </ng-container>
-    
+
         <ng-container matColumnDef="hora">
-          <th mat-header-cell *matHeaderCellDef > Hora </th>
-          <td mat-cell *matCellDef="let element"> {{element.horaInicio}} </td>
+          <th mat-header-cell *matHeaderCellDef>Hora</th>
+          <td mat-cell *matCellDef="let element">{{ element.horaInicio }}</td>
         </ng-container>
-    
+
         <ng-container matColumnDef="medico">
-          <th mat-header-cell *matHeaderCellDef > Médico </th>
-          <td mat-cell *matCellDef="let element"> {{element.nombreMedico}} </td>
+          <th mat-header-cell *matHeaderCellDef>Médico</th>
+          <td mat-cell *matCellDef="let element">{{ element.nombreMedico }}</td>
         </ng-container>
-    
+
         <ng-container matColumnDef="consultorio">
           <th mat-header-cell *matHeaderCellDef>Consultorio</th>
-          <td mat-cell *matCellDef="let element"> {{element.consultorioMedico}} </td>
+          <td mat-cell *matCellDef="let element">
+            {{ element.consultorioMedico }}
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="modalidad">
           <th mat-header-cell *matHeaderCellDef>Modalidad</th>
           <td mat-cell *matCellDef="let element">
-            <ng-container *ngIf="element.modalidad==1">Física</ng-container>
-            <ng-container  *ngIf="element.modalidad==2">Telefónica</ng-container>
-            <ng-container *ngIf="element.modalidad==3">Web</ng-container>
-            </td>
+            <ng-container *ngIf="element.modalidad == 1">Física</ng-container>
+            <ng-container *ngIf="element.modalidad == 2"
+              >Telefónica</ng-container
+            >
+            <ng-container *ngIf="element.modalidad == 3">Web</ng-container>
+          </td>
         </ng-container>
 
         <ng-container matColumnDef="informacion">
           <th mat-header-cell *matHeaderCellDef>Información de la consulta</th>
-          <td mat-cell *matCellDef="let element"> {{element.notasConsultas}} </td>
+          <td mat-cell *matCellDef="let element">
+            {{ element.notasConsultas }}
+          </td>
         </ng-container>
 
-         <ng-container matColumnDef="opciones" *ngIf="rol!=2">
+        <ng-container matColumnDef="opciones" *ngIf="rol != 2">
           <th mat-header-cell *matHeaderCellDef>Opciones</th>
-          <td mat-cell *matCellDef="let element" class="opciones"> 
-            <ng-container *ngIf="element.notasConsultas===null  && element.fecha>fechaHoy">
-              <button type="button" class="btn btn-danger"  #tooltip="matTooltip"matTooltip="Cancelar cita"data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="seleccionarCita(element.idCita)"><mat-icon>cancel</mat-icon></button>
+          <td mat-cell *matCellDef="let element" class="opciones">
+            <ng-container
+              *ngIf="
+                element.notasConsultas === null && element.fecha > fechaHoy
+              "
+            >
+              <button
+                type="button"
+                class="btn btn-danger"
+                #tooltip="matTooltip"
+                matTooltip="Cancelar cita"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+                (click)="seleccionarCita(element.idCita)"
+              >
+                <mat-icon>cancel</mat-icon>
+              </button>
             </ng-container>
           </td>
         </ng-container>
-        
+
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
-    
-      <mat-paginator [pageSizeOptions]="[5, 10, 20]"
-                     showFirstLastButtons
-                     aria-label="Select page of periodic elements">
+
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 20]"
+        showFirstLastButtons
+        aria-label="Select page of periodic elements"
+      >
       </mat-paginator>
     </div>
-    </div>
-    </div>
-    <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  </div>
+</div>
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">¿Está seguro?</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
       </div>
-      <div class="modal-body">
-        La cita se cancelará permanentemente.
-      </div>
+      <div class="modal-body">La cita se cancelará permanentemente.</div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Cerrar</button>
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="cancelarCita()">Cancelar cita</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cerrar
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          (click)="cancelarCita()"
+        >
+          Cancelar cita
+        </button>
       </div>
     </div>
   </div>
 </div>
-    
