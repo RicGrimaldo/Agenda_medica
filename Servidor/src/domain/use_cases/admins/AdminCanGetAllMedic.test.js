@@ -105,7 +105,7 @@ describe('Test admin can get all medics use case', () => {
     const isBlocked = true
     const GetAllMedicResDto = await AdminCanGetAllMedicUC.getAll(isBlocked)
     expect(GetAllMedicResDto.status).toBeTruthy()
-    GetAllMedicResDto.medics.forEach(medic => {
+    GetAllMedicResDto.dtos.forEach(medic => {
       expect(medic.blocked).toBe(isBlocked)
     })
   })
@@ -114,7 +114,7 @@ describe('Test admin can get all medics use case', () => {
     const isBlocked = false
     const GetAllMedicResDto = await AdminCanGetAllMedicUC.getAll(isBlocked)
     expect(GetAllMedicResDto.status).toBeTruthy()
-    GetAllMedicResDto.medics.forEach(medic => {
+    GetAllMedicResDto.dtos.forEach(medic => {
       expect(medic.blocked).toBe(isBlocked)
     })
   })

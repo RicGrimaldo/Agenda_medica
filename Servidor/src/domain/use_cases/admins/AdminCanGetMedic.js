@@ -1,5 +1,5 @@
-const GetMedicResDto = require('../../dtos/responses/GetMedicResDto')
-const NotFoundResDt0 = require('../../dtos/responses/DefaultResWithMsgDto')
+const GetMedicResDto = require('../../dtos/responses/GetResDto')
+const NotFoundResDto = require('../../dtos/responses/DefaultResWithMsgDto')
 module.exports = class AdminCanGetMedicUseCase {
   #medicStorage
 
@@ -16,6 +16,6 @@ module.exports = class AdminCanGetMedicUseCase {
     if (medic) {
       return new GetMedicResDto(true, medic)
     }
-    return new NotFoundResDt0(false, 'No se pudo encontrar al médico con ID ' + id)
+    return new NotFoundResDto(false, 'No se pudo encontrar al médico con ID ' + id)
   }
 }

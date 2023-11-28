@@ -1,4 +1,4 @@
-const GetAllMedicResDto = require('../../dtos/responses/GetAllMedicResDto')
+const GetAllResDto = require('../../dtos/responses/GetAllResDto')
 
 module.exports = class AdminCanGetAllMedicUseCase {
   #medicStorage
@@ -13,6 +13,6 @@ module.exports = class AdminCanGetAllMedicUseCase {
 
   async getAll (isLocked = false) {
     const medics = await this.medicStorage.getAll(isLocked)
-    return new GetAllMedicResDto(true, medics)
+    return new GetAllResDto(true, medics)
   }
 }

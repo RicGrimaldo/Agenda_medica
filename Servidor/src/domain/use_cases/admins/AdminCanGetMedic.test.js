@@ -77,7 +77,7 @@ describe('Test admin can get medic use case', () => {
     const id = 4
     const GetMedicResDto = await AdminCanGetMedicUC.get(id)
     expect(GetMedicResDto.status).toBeTruthy()
-    expect(GetMedicResDto.medic.id).toBe(id)
+    expect(GetMedicResDto.dto.id).toBe(id)
   })
 
   it('should fail to get a non-existing medic', async () => {
