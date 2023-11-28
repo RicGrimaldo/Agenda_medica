@@ -1,23 +1,26 @@
 const express = require('express')
 const routes = express.Router()
-const informacionGeneralRoutes = require('./src/routes/informacionGeneralRoutes')
-const recepcionistaRoutes = require('./src/routes/recepcionistaRoutes')
-const medicoRoutes = require('./src/routes/medicoRoutes')
-const pacientesRoutes = require('./src/routes/pacienteRoutes')
-const loginRoutes = require('./src/routes/loginRoutes')
 
-const citaRoutes = require('./src/routes/citaRoutes')
-const verifyToken = require('./src/controllers/authController');
+const cors = require('cors')
+routes.use(cors())
 
-const cors = require('cors');
-routes.use(cors());
+const verifyToken = require('./src/infrastructure/controllers/authController')
 
-//Colocación de controladores de subrutas
-routes.use('/informacion', verifyToken,informacionGeneralRoutes)
-routes.use('/recepcionistas',verifyToken, recepcionistaRoutes)
-routes.use('/medicos',verifyToken, medicoRoutes)
-routes.use('/pacientes',verifyToken, pacientesRoutes)
-routes.use('/citas', verifyToken,citaRoutes)
-routes.use('/login', loginRoutes)
+const ROUTE_SPECS = [
+  { requireSrc: './src/infrastructure/routes/informacionGeneralRoutes', validateToken: true, baseRoute: '/informacion' },
+  { requireSrc: './src/infrastructure/routes/recepcionistaRoutes', validateToken: true, baseRoute: '/recepcionistas' },
+  { requireSrc: './src/infrastructure/routes/medicoRoutes', validateToken: true, baseRoute: '/medicos' },
+  { requireSrc: './src/infrastructure/routes/pacienteRoutes', validateToken: true, baseRoute: '/pacientes' },
+  { requireSrc: './src/infrastructure/routes/citaRoutes', validateToken: true, baseRoute: '/citas' },
+  { requireSrc: './src/infrastructure/routes/loginRoutes', validateToken: false, baseRoute: '/login' }
+]
+ROUTE_SPECS.forEach(spec => {
+  const REQUIRED_ROUTES = require(spec.requireSrc)
+  if (spec.validateToken) {
+    routes.use(spec.baseRoute, verifyToken, REQUIRED_ROUTES)
+  } else {
+    routes.use(spec.baseRoute, REQUIRED_ROUTES)
+  }
+})
 
-module.exports = routes;
+module.exports = routes
