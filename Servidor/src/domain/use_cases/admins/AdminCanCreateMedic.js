@@ -5,7 +5,7 @@ module.exports = class AdminCanCreateMedicUseCase {
   #medicStorage
 
   constructor (userStorage, medicStorage) {
-    this.#userStorage = userStorage;
+    this.#userStorage = userStorage
     this.#medicStorage = medicStorage
   }
 
@@ -21,8 +21,8 @@ module.exports = class AdminCanCreateMedicUseCase {
     const validEmail = await this.validateEmail(medicDto.email)
 
     if (validEmail) {
-      const medics = await this.medicStorage.create(medicDto)
-      return new CreateMedicResDto(medics.result, medics.message)
+      const medic = await this.medicStorage.create(medicDto)
+      return new CreateMedicResDto(medic.result, medic.message)
     }
     return new CreateMedicResDto(false, 'Correo inválido. El correo ya está registrado en otro usuario.')
   }
