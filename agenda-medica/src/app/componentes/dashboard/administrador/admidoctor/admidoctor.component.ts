@@ -99,7 +99,6 @@ export class AdmidoctorComponent {
   /* Función para el guardar o actualizar un médico */
   formSubmit() {
 
-    console.log(this.idMedico);
     this.medico.bloqueadoMedico===false? 0:1;
     this.medico.especialidadMedico=this.idEspecialidad;
     if (this.idMedico) {

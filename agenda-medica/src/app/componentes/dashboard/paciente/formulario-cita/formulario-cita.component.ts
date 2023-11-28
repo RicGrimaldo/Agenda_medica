@@ -36,7 +36,7 @@ export class FormularioCitaComponent {
   pacientes:any={};
   autocompletadoPaciente=false;
   isReadOnlyNombre = false;
-  especialidades:any={};
+  especialidades:any=[];
   perfil:any;
   constructor(
     dashboardService: DashboardService,
@@ -112,6 +112,8 @@ export class FormularioCitaComponent {
         this.medicos = response;
       }
     )
+
+  console.log(this.especialidades);
   
 
   }
@@ -196,21 +198,22 @@ export class FormularioCitaComponent {
     
    }
 
-   changeEspecialidad(){
-
-    this.medicosFiltrados = this.medicos.filter((medico:any) => medico.especialidadMedico == this.cita.especialidadMedico);
-    this.cita.idMedico=null;
-    this.cita.fecha=null;
-    this.cita.hora=null;
-    if(this.medicosFiltrados.length==0){
-      this._snackBar.open('No hay médicos con esa especialidad', '', {
-        duration: 1000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom',
-      });
-    }
-  
-   }
+    changeEspecialidad() {
+      if (Object.keys(this.medicos).length === 0) {
+        return;
+      }
+      this.medicosFiltrados = this.medicos.filter((medico:any) => medico.especialidadMedico == this.cita.especialidadMedico);
+      this.cita.idMedico=null;
+      this.cita.fecha=null;
+      this.cita.hora=null;
+      if(this.medicosFiltrados.length==0){
+        this._snackBar.open('No hay médicos con esa especialidad', '', {
+          duration: 1000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
+      }
+  }
 
    changeMedico(){
     this.cita.fecha=null;
