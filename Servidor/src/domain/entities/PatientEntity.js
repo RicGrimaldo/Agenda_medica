@@ -127,7 +127,7 @@ module.exports = class PatientEntity {
 
   addAppointment (incomingAppointmentDtos, scheduleId, modalityId) {
     if (this.#scheduleIsOccupied(incomingAppointmentDtos, scheduleId)) throw new Error('Invalid schedule!')
-    this.appointmentDtos.push(new AppointmentDto(undefined, this.id, scheduleId, modalityId))
+    this.appointmentDtos.push(new AppointmentDto(undefined, this.id, scheduleId, modalityId, ''))
   }
 
   #scheduleIsOccupied (appointmentDtos, scheduleId) {

@@ -8,7 +8,6 @@ const ExpAppointmentMapper = require('./ExpAppointmentMapper')
 const AppointmentModalities = require('../constants/AppointmentModalities')
 const AppointmentDto = require('../dtos/AppointmentDto')
 const PatientDto = require('../dtos/entities/PatientDto')
-const MedicDto = require('../dtos/entities/MedicDto')
 const SpecialityDto = require('../dtos/SpecialityDto')
 const PatientMapper = require('./PatientMapper')
 const ExpMedicMapper = require('./ExpMedicMapper')
@@ -90,11 +89,13 @@ describe('Test PatientMapper', () => {
     const PATIENT_ID = 1
     const SCHEDULE_ID = 1
     const MODALITY = AppointmentModalities.ON_TELEPHONE
+    const NOTES = ''
     return new AppointmentDto(
       ID,
       PATIENT_ID,
       SCHEDULE_ID,
-      MODALITY
+      MODALITY,
+      NOTES
     )
   }
   const generateSpecialityDto = () => {
@@ -123,6 +124,7 @@ describe('Test PatientMapper', () => {
     expect(expAppointmentDto.patientId).toBe(appointmentDto.patientId)
     expect(expAppointmentDto.scheduleId).toBe(appointmentDto.scheduleId)
     expect(expAppointmentDto.modality).toBe(appointmentDto.modality)
+    expect(expAppointmentDto.notes).toBe(appointmentDto.notes)
     expect(expAppointmentDto.patientDto instanceof PatientDto).toBeTruthy()
     expect(expAppointmentDto.scheduleDto instanceof ScheduleDto).toBeTruthy()
     expect(expAppointmentDto.expMedicDto instanceof ExpMedicDto).toBeTruthy()

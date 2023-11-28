@@ -7,6 +7,7 @@ module.exports = class ExpAppointmentMapper {
       appointmentDto.patientId,
       appointmentDto.scheduleId,
       appointmentDto.modality,
+      appointmentDto.notes,
       patientDto,
       scheduleDto,
       expMedicDto
