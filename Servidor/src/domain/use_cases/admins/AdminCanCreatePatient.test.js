@@ -56,7 +56,7 @@ describe('Test admin can create patients use case', () => {
 
   beforeEach(() => {
     userStorage = generateUserStorage()
-    patientStorage = generateMedicStorage()
+    patientStorage = generatePatientStorage()
     AdminCanCreatePatientUC = new AdminCanCreatePatientUseCase(userStorage, patientStorage)
   })
 
@@ -95,7 +95,7 @@ describe('Test admin can create patients use case', () => {
     return userStorage
   }
 
-  const generateMedicStorage = () => {
+  const generatePatientStorage = () => {
     patientStorage = new FakePatientStorage()
     return patientStorage
   }
