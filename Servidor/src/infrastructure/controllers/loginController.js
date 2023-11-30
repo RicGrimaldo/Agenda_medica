@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const loginController = {}
 const mysql = require('mysql2')
 const bcrypt = require('bcrypt')
+const PatientStorage = require('../storages/PatientStorage')
 /**
  * Valida las credenciales para iniciar sesión
  * @param {*} req Contiene la petición del usuario
@@ -21,7 +22,7 @@ loginController.login = (req, res) => {
     database: process.env.DATABASE
   })
   conection.connect()
-
+  new PatientStorage().findByEmail('test@test').then(res => console.log(res))
   // Se realizan las consultas para obtener datos y saber el tipo de usuario - Tipo Paciente//
   conection.query('SELECT correoPaciente, contrasenaPaciente, idPaciente FROM `pacientes` WHERE correoPaciente=?', [correo], (_err, rows) => {
     if (rows[0] != null) {
