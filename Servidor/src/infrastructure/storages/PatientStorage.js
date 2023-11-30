@@ -1,3 +1,4 @@
+const PatientEntity = require('../../domain/entities/PatientEntity')
 const MysqlConnector = require('../db/MysqlConnector')
 
 module.exports = class PatientStorage {
@@ -14,12 +15,23 @@ module.exports = class PatientStorage {
   async getById (id) {
     const query = `SELECT * FROM nimbo.pacientes WHERE pacientes.idPaciente = "${id}" LIMIT 1;`
     const results = await this.connector.runQuery(query).then(res => res.results)
-    return results
-  }
-
-  async findByEmail (email) {
-    const query = `SELECT * FROM nimbo.pacientes WHERE pacientes.correoPaciente = "${email}" LIMIT 1;`
-    const results = await this.connector.runQuery(query).then(res => res.results)
-    return results
+    if (results && results[0]) {
+      const patient = results[0]
+      return new PatientEntity(
+        patient.idPaciente,
+        patient.nombrePaciente,
+        patient.CURPPaciente,
+        patient.fechaNacimientoPaciente,
+        patient.correoPaciente,
+        patient.telefonoPaciente,
+        patient.direccionPaciente,
+        patient.edadPaciente,
+        patient.generoPaciente,
+        patient.contrasenaPaciente,
+        patient.bloqueadoPaciente,
+        []
+      )
+    }
+    return undefined
   }
 }
