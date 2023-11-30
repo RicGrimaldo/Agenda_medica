@@ -1,10 +1,11 @@
 module.exports = class AppointmentDto {
-  constructor (id, patientId, scheduleId, modality, notes) {
+  constructor (id, patientId, scheduleId, modality, notes, medicId = null) {
     this._id = id
     this._patientId = patientId
     this._scheduleId = scheduleId
     this._modality = modality
     this._notes = notes
+    this._medicId = medicId
   }
 
   get id () {
@@ -45,5 +46,13 @@ module.exports = class AppointmentDto {
 
   set notes (notes) {
     this._notes = notes
+  }
+
+  get medicId () {
+    return this._medicId
+  }
+
+  set medicId (medicId) {
+    this._medicId = medicId
   }
 }
