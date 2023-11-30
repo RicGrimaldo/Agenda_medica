@@ -1,5 +1,7 @@
 const PatientDto = require('../../dtos/entities/PatientDto')
 const AdminCanUpdatePatientUseCase = require('./AdminCanUpdatePatient')
+const AppointmentDto = require('../../dtos/AppointmentDto')
+const AppointmentModalities = require('../../constants/AppointmentModalities')
 
 class FakeUserStorage {
   #userDtos
@@ -41,6 +43,31 @@ class FakePatientStorage {
   }
 }
 
+class FakeAppointmentStorage {
+  #appointments
+
+  constructor () {
+    this.#appointments = []
+  }
+
+  get appointments () {
+    return this.#appointments
+  }
+
+  create (appointmentDto) {
+    this.#appointments.push(appointmentDto)
+  }
+
+  releaseByPatientId (patientId) {
+    this.#appointments.forEach(appointment => {
+      if (appointment.patientId === patientId) {
+        appointment.patientId = null
+        appointment.modality = null
+      }
+    })
+  }
+}
+
 describe('Test admin can update patients use case', () => {
   const NAME = 'Nombre del Paciente'
   const CURP = 'CURP123456789'
@@ -52,12 +79,19 @@ describe('Test admin can update patients use case', () => {
   const AGE = 22
   const GENRE = 'Masculino'
   const PASSWORD = 'contraseña123'
-  const BLOCKED = false
+  const BLOCKED = true
   const PATIENT_DTO = new PatientDto(1, NAME, CURP, BIRTH_DATE, EMAIL, PHONE, ADDRESS, AGE, GENRE, PASSWORD, BLOCKED)
   const DUPLICATE_EMAIL_PATIENT_DTO = new PatientDto(2, NAME, CURP, BIRTH_DATE, DUPLICATE_EMAIL, PHONE, ADDRESS, AGE, GENRE, PASSWORD, BLOCKED)
+  const APPOINTMENT_DTOS = [
+    new AppointmentDto(1, 1, 1, AppointmentModalities.IN_PERSON, '', 1),
+    new AppointmentDto(2, 1, 2, AppointmentModalities.WEB, '', 1),
+    new AppointmentDto(3, 8, 6, AppointmentModalities.ON_TELEPHONE, '', 1),
+    new AppointmentDto(4, 9, 10, AppointmentModalities.IN_PERSON, '')
+  ]
   let AdminCanUpdatePatientUC = null
   let userStorage = null
   let patientStorage = null
+  let appointmentStorage = null
   const patients = [
     {
       id: 1,
@@ -90,7 +124,8 @@ describe('Test admin can update patients use case', () => {
   beforeEach(() => {
     userStorage = generateUserStorage()
     patientStorage = generatePatientStorage()
-    AdminCanUpdatePatientUC = new AdminCanUpdatePatientUseCase(userStorage, patientStorage)
+    appointmentStorage = generateAppointmentStorage()
+    AdminCanUpdatePatientUC = new AdminCanUpdatePatientUseCase(userStorage, patientStorage, appointmentStorage)
   })
 
   const generateUserStorage = () => {
@@ -133,6 +168,12 @@ describe('Test admin can update patients use case', () => {
     return patientStorage
   }
 
+  const generateAppointmentStorage = () => {
+    appointmentStorage = new FakeAppointmentStorage()
+    appointmentStorage.create(...APPOINTMENT_DTOS)
+    return appointmentStorage
+  }
+
   it('should be defined', () => {
     expect(AdminCanUpdatePatientUC).toBeDefined()
   })
@@ -140,6 +181,12 @@ describe('Test admin can update patients use case', () => {
   it('should update a patient', async () => {
     const UpdatePatientResDto = await AdminCanUpdatePatientUC.update(PATIENT_DTO.id, PATIENT_DTO)
     expect(UpdatePatientResDto.status).toBeTruthy()
+    appointmentStorage.appointments.forEach(appointment => {
+      if (appointment.patientId === PATIENT_DTO.id) {
+        expect(appointment.patientId).toBeNull()
+        expect(appointment.modality).toBeNull()
+      }
+    })
   })
 
   it('should fail when updating a patient', async () => {

@@ -29,10 +29,6 @@ module.exports = class AdminCanUpdateReceptionistUseCase {
 
   async validateEmail (id, email) {
     const user = await this.userStorage.findByEmail(email)
-
-    if (user && user.id !== id) {
-      return false
-    }
-    return true
+    return !user || user.id === id
   }
 }

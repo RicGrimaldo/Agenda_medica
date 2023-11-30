@@ -29,10 +29,6 @@ module.exports = class AdminCanCreateMedicUseCase {
 
   async validateEmail (email) {
     const inUseEmail = await this.userStorage.findByEmail(email)
-
-    if (inUseEmail) {
-      return false
-    }
-    return true
+    return !inUseEmail
   }
 }
