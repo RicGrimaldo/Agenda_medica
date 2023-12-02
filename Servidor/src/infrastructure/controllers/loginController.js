@@ -1,144 +1,25 @@
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const loginController = {}
-const mysql = require('mysql2')
-const bcrypt = require('bcrypt')
-const UserStorage = require('../storages/UserStorage')
-/**
- * Valida las credenciales para iniciar sesión
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-loginController.login = (req, res) => {
-  const correo = req.body.email_usuario
-  const password = req.body.password_usuario
 
-  // Conexion con la base de datos//
-  const conection = mysql.createConnection({
-    host: process.env.HOST,
-    port: 3306,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE
-  })
-  conection.connect()
-  new UserStorage().findByEmail(req.body.email_usuario).then(res => console.log(res))
-  // Se realizan las consultas para obtener datos y saber el tipo de usuario - Tipo Paciente//
-  conection.query('SELECT correoPaciente, contrasenaPaciente, idPaciente FROM `pacientes` WHERE correoPaciente=?', [correo], (_err, rows) => {
-    if (rows[0] != null) {
-      const usuario = rows[0]
-      bcrypt.compare(password, usuario.contrasenaPaciente, (err, coinciden) => {
-        if (!err) {
-          req.getConnection((err, conn) => {
-            console.log('paso')
-            const payload = {
-              check: true
-            }
-            // Aqui se indica en cuanto tiempo expira el token
-            const token = jwt.sign(payload, 'clavesupermegasecreta', {
-              expiresIn: '7d'
-            })
+loginController.login = (encryptionHelper, userCanLogInUseCase) => {
+  return (req, res) => {
+    const email = req.body.email_usuario
+    const password = encryptionHelper.encryptString(req.body.password_usuario)
 
-            if (err) return res.send(err)
-            const datos = {
-              id: usuario.idPaciente,
-              rol: 1,
-              token
-            }
-            res.json(datos)
-          })
-        }
+    userCanLogInUseCase.logIn(email, password).then((logInResDto) => {
+      if (!logInResDto.status) return res.status(401).send('Unauthorized')
+      const PAYLOAD = { check: true }
+      const SECURITY_TOKEN = process.env.SECURITY_TOKEN
+      const OPTIONS = { expiresIn: '7d' }
+      const token = jwt.sign(PAYLOAD, SECURITY_TOKEN, OPTIONS)
+      res.json({
+        id: logInResDto.userId,
+        rol: logInResDto.roleId,
+        token
       })
-    }
-  })
-
-  // Se realizan las consultas para obtener datos y saber el tipo de usuario - Tipo Medico//
-  conection.query('SELECT correoMedico, contrasenaMedico, idMedico FROM `medicos` WHERE correoMedico=?', [correo], (_err, rows) => {
-    if (rows[0] != null) {
-      const usuario = rows[0]
-      bcrypt.compare(password, usuario.contrasenaMedico, (err, coinciden) => {
-        if (!err) {
-          req.getConnection((err, conn) => {
-            console.log('paso')
-            const payload = {
-              check: true
-            }
-            // Aqui se indica en cuanto tiempo expira el token
-            const token = jwt.sign(payload, 'clavesupermegasecreta', {
-              expiresIn: '7d'
-            })
-
-            if (err) return res.send(err)
-            const datos = {
-              id: usuario.idMedico,
-              rol: 2,
-              token
-            }
-            res.json(datos)
-          })
-        }
-      })
-    }
-  })
-
-  // Se realizan las consultas para obtener datos y saber el tipo de usuario - Tipo Recepcionista//
-  conection.query('SELECT correoRecepcionista, contrasenaRecepcionista, idRecepcionista FROM `recepcionistas` WHERE correoRecepcionista=?', [correo], (_err, rows) => {
-    if (rows[0] != null) {
-      const usuario = rows[0]
-      bcrypt.compare(password, usuario.contrasenaRecepcionista, (err, coinciden) => {
-        if (!err) {
-          req.getConnection((err, conn) => {
-            console.log('paso')
-            const payload = {
-              check: true
-            }
-            // Aqui se indica en cuanto tiempo expira el token
-            const token = jwt.sign(payload, 'clavesupermegasecreta', {
-              expiresIn: '7d'
-            })
-
-            if (err) return res.send(err)
-            const datos = {
-              id: usuario.idRecepcionista,
-              rol: 3,
-              token
-            }
-            res.json(datos)
-          })
-        }
-      })
-    }
-  })
-
-  // Se realizan las consultas para obtener datos y saber el tipo de usuario - Tipo Administrador//
-  conection.query('SELECT correoAdministrador, contrasenaAdministrador, idAdministrador FROM `administradores` WHERE correoAdministrador=?', [correo], (_err, rows) => {
-    if (rows[0] != null) {
-      const usuario = rows[0]
-      console.log(usuario.correoAdministrador)
-      bcrypt.compare(password, usuario.contrasenaAdministrador, (err, coinciden) => {
-        if (!err) {
-          req.getConnection((err, conn) => {
-            console.log('paso')
-            const payload = {
-              check: true
-            }
-            // Aqui se indica en cuanto tiempo expira el token
-            const token = jwt.sign(payload, 'clavesupermegasecreta', {
-              expiresIn: '7d'
-            })
-
-            if (err) return res.send(err)
-            const datos = {
-              id: usuario.idAdministrador,
-              rol: 4,
-              token
-            }
-            res.json(datos)
-          })
-        }
-      })
-    }
-  })
+    })
+  }
 }
 
 module.exports = loginController

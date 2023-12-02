@@ -1,12 +1,11 @@
 const Roles = require('../../domain/constants/Roles')
 const UserDto = require('../../domain/dtos/UserDto')
-const MysqlConnector = require('../db/MysqlConnector')
 
 module.exports = class UserStorage {
   #connector
 
-  constructor () {
-    this.#connector = new MysqlConnector()
+  constructor (connector) {
+    this.#connector = connector
   }
 
   get connector () {

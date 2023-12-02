@@ -1,34 +1,53 @@
 const informacionGeneralController = {}
 
-/**
- * Regresa un JSON con todos los usuarios de las tablas recepcionistas,
- * medicos y pacientes de la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-informacionGeneralController.obtenerUsuarios = (req, res) => {
-  req.getConnection((err, conn) => {
-    if (err) return res.status(500).send(err)
-
-    const listaUsuarios = {}
-
-    const peticiones = {
-      recepcionistas: 'SELECT idRecepcionista,nombreRecepcionista, CURPRecepcionista,fechaNacimientoRecepcionista,correoRecepcionista,telefonoRecepcionista,direccionRecepcionista,bloqueadoRecepcionista FROM recepcionistas ORDER BY nombreRecepcionista',
-      medicos: 'SELECT idMedico,nombreMedico,CURPMedico,fechaNacimientoMedico,correoMedico,telefonoMedico,direccionMedico,especialidadMedico,consultorioMedico,cedulaProfesionalMedico,bloqueadoMedico FROM medicos ORDER BY nombreMedico',
-      pacientes: 'SELECT idPaciente,nombrePaciente,CURPPaciente,fechaNacimientoPaciente,correoPaciente,telefonoPaciente,direccionPaciente,generoPaciente,bloqueadoPaciente FROM pacientes ORDER BY nombrePaciente'
-    }
-
-    for (const llavePeticion in peticiones) {
-      const peticion = peticiones[llavePeticion]
-
-      conn.query(peticion, (err, rows) => {
-        if (err) return res.status(500).send(err)
-
-        listaUsuarios[llavePeticion] = rows
-        if (Object.keys(listaUsuarios).length === 3) res.status(200).json(listaUsuarios)
+informacionGeneralController.obtenerUsuarios = (adminCanRequestAllUsersUseCase) => {
+  return (req, res) => {
+    adminCanRequestAllUsersUseCase.getAllUsers().then((getAllUsersResDto) => {
+      res.status(200).json({
+        recepcionistas: getAllUsersResDto.receptionistDtos.map((receptionistDto) => {
+          return {
+            idRecepcionista: receptionistDto.id,
+            nombreRecepcionista: receptionistDto.name,
+            CURPRecepcionista: receptionistDto.curp,
+            fechaNacimientoRecepcionista: receptionistDto.birthDate,
+            correoRecepcionista: receptionistDto.email,
+            telefonoRecepcionista: receptionistDto.phone,
+            direccionRecepcionista: receptionistDto.address,
+            bloqueadoRecepcionista: receptionistDto.blocked
+          }
+        }),
+        medicos: getAllUsersResDto.medicDtos.map((medicDto) => {
+          return {
+            idMedico: medicDto.id,
+            nombreMedico: medicDto.name,
+            CURPMedico: medicDto.curp,
+            fechaNacimientoMedico: medicDto.birthDate,
+            correoMedico: medicDto.email,
+            telefonoMedico: medicDto.phone,
+            direccionMedico: medicDto.address,
+            especialidadMedico: medicDto.specialityId,
+            consultorioMedico: medicDto.office,
+            cedulaProfesionalMedico: medicDto.professionalId,
+            bloqueadoMedico: medicDto.blocked
+          }
+        }),
+        pacientes: getAllUsersResDto.patientDtos.map((patientDto) => {
+          return {
+            idPaciente: patientDto.id,
+            nombrePaciente: patientDto.name,
+            CURPPaciente: patientDto.curp,
+            fechaNacimientoPaciente: patientDto.birthDate,
+            correoPaciente: patientDto.email,
+            telefonoPaciente: patientDto.phone,
+            direccionPaciente: patientDto.address,
+            edadPaciente: patientDto.age,
+            generoPaciente: patientDto.genre,
+            bloqueadoPaciente: patientDto.blocked
+          }
+        })
       })
-    }
-  })
+    })
+  }
 }
 
 module.exports = informacionGeneralController
