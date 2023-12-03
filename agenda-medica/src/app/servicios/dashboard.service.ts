@@ -1,28 +1,31 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable } from '@angular/core'
+import { BehaviorSubject, Observable } from 'rxjs'
 
 export interface Dashboard {
-  menuActivo: string;
+  menuActivo: string
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class DashboardService {
+  /*  Servicio para el manejo de menú activo del header */
+  static dashboardObservable: any
 
- /*  Servicio para el manejo de menú activo del header */
-  static dashboardObservable: any;
-  constructor() {}
-  private dashboardObservablePrivete: BehaviorSubject<Dashboard> =
+  private readonly dashboardObservablePrivate: BehaviorSubject<Dashboard> =
     new BehaviorSubject<Dashboard>({
       menuActivo: 'tablero-principal'
-    });
+    })
 
-  get dashboardObservable() {
-    return this.dashboardObservablePrivete.asObservable();
+  get dashboardObservable (): Observable<Dashboard> {
+    return this.dashboardObservablePrivate.asObservable()
   }
 
-  set dashboardObservableData(data: Dashboard) {
-    this.dashboardObservablePrivete.next(data);
+  get dashboardObservableData (): Dashboard {
+    return this.dashboardObservablePrivate.getValue()
+  }
+
+  set dashboardObservableData (data: Dashboard) {
+    this.dashboardObservablePrivate.next(data)
   }
 }
