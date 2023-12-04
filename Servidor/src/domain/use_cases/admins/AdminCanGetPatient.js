@@ -12,8 +12,11 @@ module.exports = class AdminCanGetPatientUseCase {
   }
 
   async get (id) {
-    const patient = await this.patientStorage.findById(id)
+    const patient = await this.patientStorage.getById(id)
     if (patient) {
+      const date = new Date(patient.birthDate)
+      patient.birthDate = date.toISOString().slice(0, 10)
+
       return new GetPatientResDto(true, patient)
     }
     return new NotFoundResDto(false, 'No se pudo encontrar al paciente con ID ' + id)

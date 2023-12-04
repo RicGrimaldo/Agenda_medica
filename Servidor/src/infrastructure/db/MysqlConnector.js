@@ -2,9 +2,9 @@ require('dotenv').config()
 const mysql = require('mysql2')
 
 module.exports = class MysqlConnector {
-  async runQuery (query) {
+  async runQuery (query, object = null) {
     const connection = this.#createDbConnection()
-    return await this.#runDbQuery(query, connection).then((res) => {
+    return await this.#runDbQuery(query, connection, object).then((res) => {
       connection.end()
       return res
     })
@@ -24,9 +24,10 @@ module.exports = class MysqlConnector {
     }
   }
 
-  async #runDbQuery (sql, connection) {
+  async #runDbQuery (sql, connection, object = null) {
     return await new Promise((resolve, reject) => {
-      connection.query(sql, (error, results, fields) => {
+      const params = object !== null ? [object] : []
+      connection.query(sql, ...params, (error, results, fields) => {
         if (error) reject(error)
         resolve({ results, fields })
       })

@@ -9,23 +9,21 @@ const crypto = require('crypto')
  */
 pacienteController.obtenerTodos = (adminCanGetAllPatientUseCase) => {
   return (req, res) => {
-    adminCanGetAllPatientUseCase.getAllUsers().then((getAllPatientResDto) => {
-      res.status(200).json({
-        pacientes: getAllPatientResDto.patientDtos.map((patientDto) => {
-          return {
-            idPaciente: patientDto.id,
-            nombrePaciente: patientDto.name,
-            CURPPaciente: patientDto.curp,
-            fechaNacimientoPaciente: patientDto.birthDate,
-            correoPaciente: patientDto.email,
-            telefonoPaciente: patientDto.phone,
-            direccionPaciente: patientDto.address,
-            edadPaciente: patientDto.age,
-            generoPaciente: patientDto.genre,
-            bloqueadoPaciente: patientDto.blocked
-          }
-        })
-      })
+    adminCanGetAllPatientUseCase.getAll().then((getAllPatientResDto) => {
+      res.status(200).json(getAllPatientResDto.dtos.map((patientDto) => {
+        return {
+          idPaciente: patientDto.id,
+          nombrePaciente: patientDto.name,
+          CURPPaciente: patientDto.curp,
+          fechaNacimientoPaciente: patientDto.birthDate,
+          correoPaciente: patientDto.email,
+          telefonoPaciente: patientDto.phone,
+          direccionPaciente: patientDto.address,
+          edadPaciente: patientDto.age,
+          generoPaciente: patientDto.genre,
+          bloqueadoPaciente: patientDto.blocked
+        }
+      }))
     })
   }
 }
@@ -36,26 +34,28 @@ pacienteController.obtenerTodos = (adminCanGetAllPatientUseCase) => {
  * @param {*} req Contiene la petición del usuario
  * @param {*} res Contiene la respuesta que se enviara a la peticion
  */
-pacienteController.obtener = (req, res) => {
-  const id = req.params.id
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('SELECT idPaciente,nombrePaciente,CURPPaciente,fechaNacimientoPaciente,correoPaciente,telefonoPaciente,direccionPaciente,edadPaciente,generoPaciente,bloqueadoPaciente FROM pacientes WHERE idPaciente = ?', [id], (err, rows) => {
-      if (err) return res.send(err)
-
-      if (rows.length > 0) {
-        const paciente = rows[0]
-        const fecha = new Date(paciente.fechaNacimientoPaciente)
-        paciente.fechaNacimientoPaciente = fecha.toISOString().slice(0, 10)
-
-        res.json(paciente)
+pacienteController.obtener = (adminCanGetPatientUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanGetPatientUseCase.get(id).then((getPatientResDto) => {
+      if (getPatientResDto.status) {
+        res.status(200).json({
+          idPaciente: getPatientResDto.dto.id,
+          nombrePaciente: getPatientResDto.dto.name,
+          CURPPaciente: getPatientResDto.dto.curp,
+          fechaNacimientoPaciente: getPatientResDto.dto.birthDate,
+          correoPaciente: getPatientResDto.dto.email,
+          telefonoPaciente: getPatientResDto.dto.phone,
+          direccionPaciente: getPatientResDto.dto.address,
+          edadPaciente: getPatientResDto.dto.age,
+          generoPaciente: getPatientResDto.dto.genre,
+          bloqueadoPaciente: getPatientResDto.dto.blocked
+        })
       } else {
-        res.status(404).send('No se pudo encontrar al paciente con ID ' + id)
+        res.status(404).send(getPatientResDto.message)
       }
     })
-  })
+  }
 }
 
 /**
@@ -127,40 +127,17 @@ pacienteController.eliminar = (req, res) => {
  * @param {*} req Contiene la petición del usuario
  * @param {*} res Contiene la respuesta que se enviara a la peticion
  */
-pacienteController.insertar = (req, res) => {
-  req.getConnection(async (err, conn) => {
-    if (err) return res.send(err)
-
-    const correoPaciente = req.body.correoPaciente // Correo del paciente a crear
-
-    // Verificar si el correo ya existe en otros usuarios
-    conn.query(
-      'SELECT COUNT(*) AS count FROM ( SELECT correoPaciente FROM pacientes UNION SELECT correoMedico FROM medicos UNION SELECT correoRecepcionista FROM recepcionistas) AS usuarios WHERE correoPaciente = ?',
-      [correoPaciente],
-      async (err, result) => {
-        if (err) return res.send(err)
-
-        const count = result[0].count
-
-        if (count > 0) {
-          // El correo ya existe en otro usuario, enviar una respuesta indicando el problema
-          return res.json('Correo inválido. El correo ya está registrado en otro usuario.')
-        } else {
-          try {
-            req.body.contrasenaPaciente = await generarHashContraseña(req.body.contrasenaPaciente)
-
-            conn.query('INSERT INTO pacientes SET ?', [req.body], (err, rows) => {
-              if (err) return res.send(err)
-
-              res.json('¡Paciente agregado!')
-            })
-          } catch (error) {
-            return res.send(error)
-          }
-        }
+pacienteController.insertar = (adminCanCreatePatientUseCase) => {
+  return (req, res) => {
+    req.body.contrasenaPaciente = generarHashContraseña(req.body.contrasenaPaciente)
+    adminCanCreatePatientUseCase.create(req.body).then((createPatientResDto) => {
+      if (createPatientResDto.status) {
+        res.status(200).json(createPatientResDto.message)
+      } else {
+        res.json(createPatientResDto.message)
       }
-    )
-  })
+    })
+  }
 }
 
 /**

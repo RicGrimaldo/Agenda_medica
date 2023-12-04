@@ -18,11 +18,11 @@ module.exports = class AdminCanCreatePatientUseCase {
   }
 
   async create (patientDto) {
-    const validEmail = await this.validateEmail(patientDto.email)
+    const validEmail = await this.validateEmail(patientDto.correoPaciente)
 
     if (validEmail) {
       const patient = await this.patientStorage.create(patientDto)
-      return new CreatePatientResDto(patient.result, patient.message)
+      return new CreatePatientResDto(patient.status, patient.message)
     }
     return new CreatePatientResDto(false, 'Correo inválido. El correo ya está registrado en otro usuario.')
   }

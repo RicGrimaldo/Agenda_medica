@@ -12,8 +12,8 @@ module.exports = class AdminCanGetAllPatientUseCase {
     return this.#patientStorage
   }
 
-  async getAll (isLocked = false) {
-    const patients = await this.patientStorage.getAll(isLocked)
+  async getAll () {
+    const patients = await this.patientStorage.getAll()
     const patientMapper = new PatientMapper()
 
     return new GetAllPatientResDto(true,

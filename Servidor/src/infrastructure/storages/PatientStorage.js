@@ -11,6 +11,16 @@ module.exports = class PatientStorage {
     return this.#connector
   }
 
+  async create (patient) {
+    try {
+      const query = 'INSERT INTO pacientes SET ?'
+      await this.connector.runQuery(query, patient).then(res => res.results)
+      return { status: true, message: '¡Paciente agregado!' }
+    } catch (error) {
+      return { status: false, message: error.sqlMessage }
+    }
+  }
+
   async getById (id) {
     const query = `SELECT * FROM nimbo.pacientes WHERE pacientes.idPaciente = "${id}" LIMIT 1;`
     const results = await this.connector.runQuery(query).then(res => res.results)
@@ -34,10 +44,9 @@ module.exports = class PatientStorage {
     return undefined
   }
 
-  async getAll (isLocked = false) {
-    const blockStatus = isLocked ? 1 : 0
-    const query = 'SELECT * FROM nimbo.pacientes WHERE bloqueadoPaciente = ? ORDER BY nombrePaciente ASC;'
-    const results = await this.connector.runQuery(query, [blockStatus]).then(res => res.results)
+  async getAll () {
+    const query = 'SELECT * FROM nimbo.pacientes WHERE bloqueadoPaciente = 0 ORDER BY nombrePaciente ASC;'
+    const results = await this.connector.runQuery(query).then(res => res.results)
     if (results) {
       return results.map((patient) => {
         return new PatientEntity(
