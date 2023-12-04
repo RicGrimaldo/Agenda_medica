@@ -67,4 +67,13 @@ module.exports = class PatientStorage {
     }
     return undefined
   }
+
+  async delete (id){
+    const query = 'DELETE FROM pacientes WHERE idPaciente = ?'
+    const results = await this.connector.runQuery(query, id).then(res => res.results)
+    if (results) {
+      return true
+    }
+    return undefined
+  }
 }

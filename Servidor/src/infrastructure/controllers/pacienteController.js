@@ -109,17 +109,13 @@ pacienteController.actualizar = (req, res) => {
  * @param {*} req Contiene la petición del usuario
  * @param {*} res Contiene la respuesta que se enviara a la peticion
  */
-pacienteController.eliminar = (req, res) => {
-  const id = req.params.id
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('DELETE FROM pacientes WHERE idPaciente = ?', [id], (err, rows) => {
-      if (err) return res.send(err)
-      res.json('paciente eliminado!')
+pacienteController.eliminar = (adminCanDeletePatientUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanDeletePatientUseCase.delete(id).then((deletePatientResDto) => {
+      res.json(deletePatientResDto.message)
     })
-  })
+  }
 }
 
 /**
@@ -131,11 +127,7 @@ pacienteController.insertar = (adminCanCreatePatientUseCase) => {
   return (req, res) => {
     req.body.contrasenaPaciente = generarHashContraseña(req.body.contrasenaPaciente)
     adminCanCreatePatientUseCase.create(req.body).then((createPatientResDto) => {
-      if (createPatientResDto.status) {
-        res.status(200).json(createPatientResDto.message)
-      } else {
-        res.json(createPatientResDto.message)
-      }
+      res.json(createPatientResDto.message)
     })
   }
 }
