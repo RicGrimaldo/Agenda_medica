@@ -1,4 +1,5 @@
 const GetAllPatientResDto = require('../../dtos/responses/GetAllResDto')
+const PatientMapper = require('../../mappers/PatientMapper')
 
 module.exports = class AdminCanGetAllPatientUseCase {
   #patientStorage
@@ -13,6 +14,9 @@ module.exports = class AdminCanGetAllPatientUseCase {
 
   async getAll (isLocked = false) {
     const patients = await this.patientStorage.getAll(isLocked)
-    return new GetAllPatientResDto(true, patients)
+    const patientMapper = new PatientMapper()
+
+    return new GetAllPatientResDto(true,
+      patients.map((patientEntity) => patientMapper.format(patientEntity)))
   }
 }

@@ -34,9 +34,10 @@ module.exports = class PatientStorage {
     return undefined
   }
 
-  async getAll () {
-    const query = 'SELECT * FROM nimbo.pacientes ORDER BY nombrePaciente ASC;'
-    const results = await this.connector.runQuery(query).then(res => res.results)
+  async getAll (isLocked = false) {
+    const blockStatus = isLocked ? 1 : 0
+    const query = 'SELECT * FROM nimbo.pacientes WHERE bloqueadoPaciente = ? ORDER BY nombrePaciente ASC;'
+    const results = await this.connector.runQuery(query, [blockStatus]).then(res => res.results)
     if (results) {
       return results.map((patient) => {
         return new PatientEntity(

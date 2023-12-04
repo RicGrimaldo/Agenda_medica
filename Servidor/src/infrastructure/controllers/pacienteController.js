@@ -7,15 +7,27 @@ const crypto = require('crypto')
  * @param {*} req Contiene la petición del usuario
  * @param {*} res Contiene la respuesta que se enviara a la peticion
  */
-pacienteController.obtenerTodos = (req, res) => {
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('SELECT idPaciente,nombrePaciente,CURPPaciente,fechaNacimientoPaciente,correoPaciente,telefonoPaciente,direccionPaciente,generoPaciente,bloqueadoPaciente FROM pacientes WHERE bloqueadoPaciente=0 ORDER BY nombrePaciente', (err, rows) => {
-      if (err) return res.send(err)
-      res.json(rows)
+pacienteController.obtenerTodos = (adminCanGetAllPatientUseCase) => {
+  return (req, res) => {
+    adminCanGetAllPatientUseCase.getAllUsers().then((getAllPatientResDto) => {
+      res.status(200).json({
+        pacientes: getAllPatientResDto.patientDtos.map((patientDto) => {
+          return {
+            idPaciente: patientDto.id,
+            nombrePaciente: patientDto.name,
+            CURPPaciente: patientDto.curp,
+            fechaNacimientoPaciente: patientDto.birthDate,
+            correoPaciente: patientDto.email,
+            telefonoPaciente: patientDto.phone,
+            direccionPaciente: patientDto.address,
+            edadPaciente: patientDto.age,
+            generoPaciente: patientDto.genre,
+            bloqueadoPaciente: patientDto.blocked
+          }
+        })
+      })
     })
-  })
+  }
 }
 
 /**
