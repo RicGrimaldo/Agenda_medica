@@ -1,7 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { PacienteComponent } from './paciente/paciente.component';
-import { Dashboard, DashboardService } from 'src/app/servicios/dashboard.service';
-import { Observable } from 'rxjs';
+import { Component } from '@angular/core'
 
 @Component({
   selector: 'app-dashboard',
@@ -9,5 +6,5 @@ import { Observable } from 'rxjs';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
- 
+
 }
