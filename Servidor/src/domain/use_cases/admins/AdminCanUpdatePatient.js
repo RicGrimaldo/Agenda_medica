@@ -24,22 +24,25 @@ module.exports = class AdminCanUpdatePatientUseCase {
   }
 
   async update (id, patientDto) {
-    const validEmail = await this.validateEmail(id, patientDto.email)
+    const validEmail = await this.validateEmail(id, patientDto.correoPaciente)
 
     if (validEmail) {
-      const patient = await this.patientStorage.update(id, patientDto)
-
-      if (patient.result && patientDto.blocked) {
-        this.appointmentStorage.releaseByPatientId(patientDto.id)
+      if (patientDto.bloqueadoPaciente) {
+        const releaseAppointments = await this.appointmentStorage.releaseByPatientId(id)
+        if (!releaseAppointments.status) {
+          return new UpdatePatientResDto(releaseAppointments.status, releaseAppointments.message)
+        }
       }
 
-      return new UpdatePatientResDto(patient.result, patient.message)
+      const patient = await this.patientStorage.update(id, patientDto)
+      return new UpdatePatientResDto(patient.status, patient.message)
     }
+
     return new UpdatePatientResDto(false, 'Correo inválido. El correo ya está registrado en otro usuario.')
   }
 
   async validateEmail (id, email) {
     const user = await this.userStorage.findByEmail(email)
-    return !user || user.id === id
+    return !user || parseInt(user.id) === parseInt(id)
   }
 }

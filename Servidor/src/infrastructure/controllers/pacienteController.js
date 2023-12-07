@@ -64,43 +64,13 @@ pacienteController.obtener = (adminCanGetPatientUseCase) => {
  * @param {*} res Contiene la respuesta que se enviara a la peticion
  */
 
-pacienteController.actualizar = (req, res) => {
-  const id = req.params.id
-  const updatedPaciente = req.body
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    const correoPaciente = updatedPaciente.correoPaciente // Nuevo correo del paciente a actualizar
-
-    // Verificar si el correo ya existe en otros usuarios, excluyendo el paciente actualizado
-    conn.query(
-      'SELECT COUNT(*) AS count FROM (SELECT correoPaciente FROM pacientes UNION SELECT correoMedico FROM medicos UNION SELECT correoRecepcionista FROM recepcionistas) AS usuarios WHERE correoPaciente = ? AND correoPaciente != (SELECT correoPaciente FROM pacientes WHERE idPaciente = ?)',
-      [correoPaciente, id],
-      (err, result) => {
-        if (err) return res.send(err)
-
-        const count = result[0].count
-
-        if (count > 0) {
-          // El correo ya existe en otro usuario, enviar una respuesta indicando el problema
-          return res.json('Correo inválido. El correo ya está registrado en otro usuario.')
-        } else {
-          conn.query('UPDATE pacientes SET ? WHERE idPaciente = ?', [updatedPaciente, id], (err, result) => {
-            if (err) return res.send(err)
-
-            if (updatedPaciente.bloqueadoPaciente) {
-              conn.query("UPDATE citas JOIN pacientes ON citas.idPaciente = pacientes.idPaciente SET citas.idPaciente = null, citas.modalidad = null WHERE pacientes.bloqueadoPaciente = 1 AND pacientes.idPaciente = ? AND CONCAT(citas.fecha, ' ', citas.horaInicio) >= NOW();", [id], (err, result) => {
-                if (err) return res.send(err)
-              })
-            }
-
-            res.json('Paciente actualizado.')
-          })
-        }
-      }
-    )
-  })
+pacienteController.actualizar = (adminCanUpdatePatientUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanUpdatePatientUseCase.update(id, req.body).then((updatePatientResDto) => {
+      res.json(updatePatientResDto.message)
+    })
+  }
 }
 
 /**

@@ -8,6 +8,8 @@ const AdminCanGetPatientUseCase = require('../../domain/use_cases/admins/AdminCa
 const AdminCanCreatePatientUseCase = require('../../domain/use_cases/admins/AdminCanCreatePatient')
 const UserStorage = require('../storages/UserStorage')
 const AdminCanDeletePatientUseCase = require('../../domain/use_cases/admins/AdminCanDeletePatient')
+const AdminCanUpdatePatientUseCase = require('../../domain/use_cases/admins/AdminCanUpdatePatient')
+const AppointmentStorage = require('../storages/AppointmentStorage')
 const connector = new MysqlConnector()
 
 pacienteRoutes.get('/', pacienteController.obtenerTodos(
@@ -19,7 +21,9 @@ pacienteRoutes.post('/registrar', pacienteController.insertar(
 pacienteRoutes.get('/obtener/:id', pacienteController.obtener(
   new AdminCanGetPatientUseCase(new PatientStorage(connector))
 ))
-pacienteRoutes.put('/actualizar/:id', pacienteController.actualizar)
+pacienteRoutes.put('/actualizar/:id', pacienteController.actualizar(
+  new AdminCanUpdatePatientUseCase(new UserStorage(connector), new PatientStorage(connector), new AppointmentStorage(connector))
+))
 pacienteRoutes.delete('/eliminar/:id', pacienteController.eliminar(
   new AdminCanDeletePatientUseCase(new PatientStorage(connector))
 ))

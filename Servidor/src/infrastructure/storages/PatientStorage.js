@@ -21,6 +21,16 @@ module.exports = class PatientStorage {
     }
   }
 
+  async update (id, patient) {
+    try {
+      const query = 'UPDATE pacientes SET ? WHERE idPaciente = ?'
+      await this.connector.runQuery(query, [patient, id]).then(res => res.results)
+      return { status: true, message: '¡Paciente actualizado!' }
+    } catch (error) {
+      return { status: false, message: error.sqlMessage }
+    }
+  }
+
   async getById (id) {
     const query = `SELECT * FROM nimbo.pacientes WHERE pacientes.idPaciente = "${id}" LIMIT 1;`
     const results = await this.connector.runQuery(query).then(res => res.results)
@@ -68,7 +78,7 @@ module.exports = class PatientStorage {
     return undefined
   }
 
-  async delete (id){
+  async delete (id) {
     const query = 'DELETE FROM pacientes WHERE idPaciente = ?'
     const results = await this.connector.runQuery(query, id).then(res => res.results)
     if (results) {
