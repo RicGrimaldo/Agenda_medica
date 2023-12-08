@@ -10,7 +10,6 @@ module.exports = class AppointmentStorage {
   }
 
   async releaseByPatientId (id) {
-    console.log('Entro')
     try {
       const query = "UPDATE citas JOIN pacientes ON citas.idPaciente = pacientes.idPaciente SET citas.idPaciente = null, citas.modalidad = null WHERE pacientes.bloqueadoPaciente = 1 AND pacientes.idPaciente = ? AND CONCAT(citas.fecha, ' ', citas.horaInicio) >= NOW();"
       await this.connector.runQuery(query, id).then(res => res.results)

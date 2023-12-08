@@ -2,11 +2,6 @@ const pacienteController = {}
 const ExcelJS = require('exceljs')
 const crypto = require('crypto')
 
-/**
- * Devuelve la información de todos los pacientes en la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
 pacienteController.obtenerTodos = (adminCanGetAllPatientUseCase) => {
   return (req, res) => {
     adminCanGetAllPatientUseCase.getAll().then((getAllPatientResDto) => {
@@ -28,12 +23,6 @@ pacienteController.obtenerTodos = (adminCanGetAllPatientUseCase) => {
   }
 }
 
-/**
- * Devuelve la información de un paciente de la base de datos
- * apartir de su id
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
 pacienteController.obtener = (adminCanGetPatientUseCase) => {
   return (req, res) => {
     const id = req.params.id
@@ -58,12 +47,6 @@ pacienteController.obtener = (adminCanGetPatientUseCase) => {
   }
 }
 
-/**
- * Actualiza la información de un paciente de la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-
 pacienteController.actualizar = (adminCanUpdatePatientUseCase) => {
   return (req, res) => {
     const id = req.params.id
@@ -73,12 +56,6 @@ pacienteController.actualizar = (adminCanUpdatePatientUseCase) => {
   }
 }
 
-/**
- * Elimina la información de un paciente de la base de datos
- * apartir de su id
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
 pacienteController.eliminar = (adminCanDeletePatientUseCase) => {
   return (req, res) => {
     const id = req.params.id
@@ -88,11 +65,6 @@ pacienteController.eliminar = (adminCanDeletePatientUseCase) => {
   }
 }
 
-/**
- * Agrega un paciente a la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
 pacienteController.insertar = (adminCanCreatePatientUseCase) => {
   return (req, res) => {
     req.body.contrasenaPaciente = generarHashContraseña(req.body.contrasenaPaciente)
@@ -101,12 +73,6 @@ pacienteController.insertar = (adminCanCreatePatientUseCase) => {
     })
   }
 }
-
-/**
- * Obtiene el historial clínico del paciente
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
 
 pacienteController.historialClinico = (req, res) => {
   const id = req.params.id
@@ -126,11 +92,6 @@ pacienteController.historialClinico = (req, res) => {
   })
 }
 
-/**
- * Envia un archio xlss con el historial clinico
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
 pacienteController.descargarHistorialClinico = (req, res) => {
   const id = req.params.id
 
@@ -175,11 +136,6 @@ pacienteController.descargarHistorialClinico = (req, res) => {
     })
   })
 }
-/**
- * Obtiene las citas atendidas y por atender de un paciente
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
 
 pacienteController.agenda = (req, res) => {
   const id = req.params.id
@@ -202,11 +158,6 @@ pacienteController.agenda = (req, res) => {
   })
 }
 
-/**
- * Encripta una contraseña utilizando el algoritmo SHA256.
- * @param {string} password - La contraseña del usuario.
- * @return {string} El hash de la contraseña en formato hexadecimal.
- */
 function generarHashContraseña (password) {
   const hash = crypto.createHash('sha256').update(password).digest('hex')
   return hash
