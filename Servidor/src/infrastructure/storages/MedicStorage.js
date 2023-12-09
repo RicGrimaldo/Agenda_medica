@@ -59,4 +59,14 @@ module.exports = class MedicStorage {
     }
     return undefined
   }
+
+  async create (medic) {
+    try {
+      const query = 'INSERT INTO medicos SET ?'
+      await this.connector.runQuery(query, medic).then(res => res.results)
+      return { status: true, message: '¡Medico agregado!' }
+    } catch (error) {
+      return { status: false, message: error.sqlMessage }
+    }
+  }
 }

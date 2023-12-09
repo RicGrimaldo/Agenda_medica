@@ -110,42 +110,13 @@ medicoController.eliminar = (req, res) => {
   })
 }
 
-/**
- * Agrega un medico a la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-medicoController.insertar = (req, res) => {
-  req.getConnection(async (err, conn) => {
-    if (err) return res.send(err)
-
-    const correoMedico = req.body.correoMedico // Correo del médico a crear
-
-    // Verificar si el correo ya existe en otros usuarios
-    conn.query(
-      'SELECT COUNT(*) AS count FROM (SELECT correoMedico FROM medicos UNION SELECT correoRecepcionista FROM recepcionistas UNION SELECT correoPaciente FROM pacientes) AS usuarios WHERE correoMedico = ?',
-      [correoMedico],
-      async (err, result) => {
-        if (err) return res.send(err)
-
-        const count = result[0].count
-
-        if (count > 0) {
-          // El correo ya existe en otro usuario, enviar una respuesta indicando el problema
-          return res.json('Correo inválido. El correo ya está registrado en otro usuario.')
-        } else {
-          // Si el correo no existe en otros usuarios, continuar con la inserción del médico
-          req.body.contrasenaMedico = await generarHashContraseña(req.body.contrasenaMedico)
-
-          conn.query('INSERT INTO medicos SET ?', [req.body], (err, rows) => {
-            if (err) return res.send(err)
-
-            res.json('¡Médico agregado!')
-          })
-        }
-      }
-    )
-  })
+medicoController.insertar = (adminCanCreateMedicUseCase) => {
+  return (req, res) => {
+    req.body.contrasenaMedico = generarHashContraseña(req.body.contrasenaMedico)
+    adminCanCreateMedicUseCase.create(req.body).then((createMedicResDto) => {
+      res.json(createMedicResDto.message)
+    })
+  }
 }
 
 /**

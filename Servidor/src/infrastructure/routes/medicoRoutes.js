@@ -15,7 +15,9 @@ const MedicStorage = require('../storages/MedicStorage')
 medicoRoutes.get('/', medicoController.obtenerTodos(
   new AdminCanGetAllMedicUseCase(new MedicStorage(connector))
 ))
-medicoRoutes.post('/registrar', medicoController.insertar)
+medicoRoutes.post('/registrar', medicoController.insertar(
+  new AdminCanCreateMedicUseCase(new UserStorage(connector), new MedicStorage(connector))
+))
 
 medicoRoutes.get('/obtener/:id', medicoController.obtener(
   new AdminCanGetMedicUseCase(new MedicStorage(connector))
