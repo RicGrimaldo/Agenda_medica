@@ -17,8 +17,8 @@ module.exports = class AdminCanUpdateReceptionistUseCase {
     return this.#receptionistStorage
   }
 
-  async update (id, receptionistDto) {
-    const validEmail = await this.validateEmail(id, receptionistDto.email)
+  async update (id, receptionistDto, email) {
+    const validEmail = await this.validateEmail(id, email)
 
     if (validEmail) {
       const receptionist = await this.receptionistStorage.update(id, receptionistDto)

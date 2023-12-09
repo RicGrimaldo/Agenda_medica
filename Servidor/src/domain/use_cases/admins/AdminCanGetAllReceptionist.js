@@ -11,8 +11,9 @@ module.exports = class AdminCanGetAllReceptionistUseCase {
     return this.#receptionistStorage
   }
 
-  async getAll (isLocked = false) {
-    const receptionists = await this.receptionistStorage.getAll(isLocked)
+  async getAll () {
+    const receptionists = await this.receptionistStorage.getAll()
+    console.log(receptionists)
     return new GetAllReceptionistResDto(true, receptionists)
   }
 }
