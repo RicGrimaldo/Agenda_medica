@@ -104,31 +104,23 @@ medicoController.agenda = (adminCanGetMedicDiaryUseCase) => {
     })
   }
 }
-/**
- *Se obtienen las citas disponibles del médico
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-medicoController.agendaDisponible = (req, res) => {
-  const id = req.params.id
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query("SELECT citas.idCita, citas.fecha, citas.horaInicio, citas.horaTermino FROM medicos JOIN citas WHERE medicos.idMedico = citas.idMedico AND citas.idMedico=? AND citas.idPaciente IS NULL AND CONCAT(citas.fecha, ' ', citas.horaInicio) >= NOW()", [id], (err, rows) => {
-      if (err) return res.send(err)
-      for (let i = 0; i < rows.length; i++) {
-        const fecha = rows[i].fecha
-        const fechaFormateada = fecha.toISOString().substring(0, 10) // "2023-05-07"
-        const start = fechaFormateada.concat('T', rows[i].horaInicio) // "2023-05-07T12:36:00"
-        const end = fechaFormateada.concat('T', rows[i].horaTermino) // "2023-05-07T12:36:00"
-        rows[i].start = start
-        rows[i].end = end
+medicoController.agendaDisponible = (adminCanGetAvailableMedicDiaryUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanGetAvailableMedicDiaryUseCase.getAvailableMedicDiary(id).then((getAvailableMedicDiaryResDto) => {
+      for (let i = 0; i < getAvailableMedicDiaryResDto.dtos.length; i++) {
+        const date = getAvailableMedicDiaryResDto.dtos[i].fecha
+        const formattedDate = date.toISOString().substring(0, 10)
+        const start = formattedDate.concat('T', getAvailableMedicDiaryResDto.dtos[i].horaInicio)
+        const end = formattedDate.concat('T', getAvailableMedicDiaryResDto.dtos[i].horaTermino)
+        getAvailableMedicDiaryResDto.dtos[i].start = start
+        getAvailableMedicDiaryResDto.dtos[i].end = end
       }
-      res.json(rows)
+      res.json(getAvailableMedicDiaryResDto.dtos)
     })
-  })
+  }
 }
+
 /**
  *Se obtienen las citas programadas del médico
  * @param {*} req Contiene la petición del usuario
