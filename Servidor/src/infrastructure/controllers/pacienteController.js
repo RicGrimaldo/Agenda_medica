@@ -1,5 +1,4 @@
 const pacienteController = {}
-const ExcelJS = require('exceljs')
 const crypto = require('crypto')
 
 pacienteController.obtenerTodos = (adminCanGetAllPatientUseCase) => {
@@ -50,7 +49,7 @@ pacienteController.obtener = (adminCanGetPatientUseCase) => {
 pacienteController.actualizar = (adminCanUpdatePatientUseCase) => {
   return (req, res) => {
     const id = req.params.id
-    adminCanUpdatePatientUseCase.update(id, req.body).then((updatePatientResDto) => {
+    adminCanUpdatePatientUseCase.update(id, req.body, req.body.correoPaciente, req.body.bloqueadoPaciente).then((updatePatientResDto) => {
       res.json(updatePatientResDto.message)
     })
   }
@@ -68,7 +67,7 @@ pacienteController.eliminar = (adminCanDeletePatientUseCase) => {
 pacienteController.insertar = (adminCanCreatePatientUseCase) => {
   return (req, res) => {
     req.body.contrasenaPaciente = generarHashContraseña(req.body.contrasenaPaciente)
-    adminCanCreatePatientUseCase.create(req.body).then((createPatientResDto) => {
+    adminCanCreatePatientUseCase.create(req.body, req.body.correoPaciente).then((createPatientResDto) => {
       res.json(createPatientResDto.message)
     })
   }

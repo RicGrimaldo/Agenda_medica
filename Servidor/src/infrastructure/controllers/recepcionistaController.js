@@ -1,148 +1,74 @@
 const recepcionistaController = {}
 const crypto = require('crypto')
-const bcrypt = require('bcryptjs')
-/**
- * Devuelve la información de todos los recepcionistas en la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-recepcionistaController.obtenerTodos = (req, res) => {
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
 
-    conn.query('SELECT idRecepcionista, nombreRecepcionista, CURPRecepcionista, fechaNacimientoRecepcionista, correoRecepcionista, telefonoRecepcionista, direccionRecepcionista, bloqueadoRecepcionista FROM recepcionistas WHERE bloqueadoRecepcionista = 0 ORDER BY nombreRecepcionista', (err, rows) => {
-      if (err) return res.send(err)
-      res.json(rows)
-    })
-  })
+recepcionistaController.obtenerTodos = (adminCanGetAllReceptionistUseCase) => {
+  return (req, res) => {
+    res.status(200).json(adminCanGetAllReceptionistUseCase.dtos.map((receptionistDto) => {
+      return {
+        idPaciente: receptionistDto.id,
+        nombrePaciente: receptionistDto.name,
+        CURPPaciente: receptionistDto.curp,
+        fechaNacimientoPaciente: receptionistDto.birthDate,
+        correoPaciente: receptionistDto.email,
+        telefonoPaciente: receptionistDto.phone,
+        direccionPaciente: receptionistDto.address,
+        bloqueadoPaciente: receptionistDto.blocked
+      }
+    }))
+  }
 }
 
-/**
- * Devuelve la información de un recepcionista de la base de datos a partir de su id
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviará a la petición
- */
-recepcionistaController.obtener = (req, res) => {
-  const id = req.params.id
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('SELECT idRecepcionista, nombreRecepcionista, CURPRecepcionista, fechaNacimientoRecepcionista, correoRecepcionista, telefonoRecepcionista, direccionRecepcionista, bloqueadoRecepcionista FROM recepcionistas WHERE idRecepcionista = ?', [id], (err, rows) => {
-      if (err) return res.send(err)
-
-      if (rows.length > 0) {
-        const recepcionista = rows[0]
-        const fecha = new Date(recepcionista.fechaNacimientoRecepcionista)
-        recepcionista.fechaNacimientoRecepcionista = fecha.toISOString().slice(0, 10)
-        res.json(recepcionista)
+recepcionistaController.obtener = (adminCanGetReceptionistUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanGetReceptionistUseCase.get(id).then((getReceptionistResDto) => {
+      if (getReceptionistResDto.status) {
+        const date = new Date(getReceptionistResDto.dto.birthDate)
+        getReceptionistResDto.dto.birthDate = date.toISOString().slice(0, 10)
+        res.status(200).json({
+          idRecepcionista: getReceptionistResDto.dto.id,
+          nombreRecepcionista: getReceptionistResDto.dto.name,
+          CURPRecepcionista: getReceptionistResDto.dto.curp,
+          fechaNacimientoRecepcionista: getReceptionistResDto.dto.birthDate,
+          correoRecepcionista: getReceptionistResDto.dto.email,
+          telefonoRecepcionista: getReceptionistResDto.dto.phone,
+          direccionRecepcionista: getReceptionistResDto.dto.address,
+          bloqueadoRecepcionista: getReceptionistResDto.dto.blocked
+        })
       } else {
-        res.status(404).send('No se pudo encontrar al recepcionista con ID ' + id)
+        res.status(404).send(getReceptionistResDto.message)
       }
     })
-  })
+  }
 }
 
-/**
- * Actualiza la información de un recepcionista en la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviará a la petición
- */
-recepcionistaController.actualizar = (req, res) => {
-  const id = req.params.id
-  const updatedRecepcionista = req.body
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    const correoRecepcionista = updatedRecepcionista.correoRecepcionista // Nuevo correo del recepcionista a actualizar
-
-    // Verificar si el correo ya existe en otros usuarios, excluyendo el recepcionista actualizado
-    conn.query(
-      'SELECT COUNT(*) AS count FROM (SELECT correoRecepcionista FROM recepcionistas UNION SELECT correoPaciente FROM pacientes UNION SELECT correoMedico FROM medicos) AS usuarios WHERE correoRecepcionista = ? AND correoRecepcionista != (SELECT correoRecepcionista FROM recepcionistas WHERE idRecepcionista = ?)',
-      [correoRecepcionista, id],
-      (err, result) => {
-        if (err) return res.send(err)
-
-        const count = result[0].count
-
-        if (count > 0) {
-          // El correo ya existe en otro usuario, enviar una respuesta indicando el problema
-          res.json('Correo inválido. El correo ya está registrado en otro usuario.')
-        } else {
-          conn.query('UPDATE recepcionistas SET ? WHERE idRecepcionista = ?', [updatedRecepcionista, id], (err, result) => {
-            if (err) return res.send(err)
-
-            res.json('Recepcionista actualizado.')
-          })
-        }
-      }
-    )
-  })
-}
-
-/**
- * Elimina la información de un recepcionista de la base de datos a partir de su id
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviará a la petición
- */
-recepcionistaController.eliminar = (req, res) => {
-  const id = req.params.id
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('DELETE FROM recepcionistas WHERE idRecepcionista = ?', [id], (err, rows) => {
-      if (err) return res.send(err)
-      res.json('¡Recepcionista eliminado!')
+recepcionistaController.actualizar = (adminCanUpdateReceptionistUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanUpdateReceptionistUseCase.update(id, req.body, req.body.correoRecepcionista).then((updateReceptionistResDto) => {
+      res.json(updateReceptionistResDto.message)
     })
-  })
+  }
 }
 
-/**
- * Agrega un recepcionista a la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviará a la petición
- */
-recepcionistaController.insertar = (req, res) => {
-  req.getConnection(async (err, conn) => {
-    if (err) return res.send(err)
-
-    const correoRecepcionista = req.body.correoRecepcionista
-
-    // Verificar si el correo ya existe en otros usuarios
-    conn.query(
-      'SELECT COUNT(*) AS count FROM (SELECT correoRecepcionista FROM recepcionistas UNION SELECT correoPaciente FROM pacientes UNION SELECT correoMedico FROM medicos) AS usuarios WHERE correoRecepcionista = ?',
-      [correoRecepcionista],
-      async (err, result) => {
-        if (err) return res.send(err)
-
-        const count = result[0].count
-
-        if (count > 0) {
-          return res.json('Correo inválido. El correo ya está registrado en otro usuario.')
-        } else {
-          try {
-            req.body.contrasenaRecepcionista = await generarHashContraseña(req.body.contrasenaRecepcionista)
-
-            conn.query('INSERT INTO recepcionistas SET ?', [req.body], (err, rows) => {
-              if (err) return res.send(err)
-
-              res.json('¡Recepcionista agregado!')
-            })
-          } catch (error) {
-            return res.send(error)
-          }
-        }
-      }
-    )
-  })
+recepcionistaController.eliminar = (adminCanDeleteReceptionistUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanDeleteReceptionistUseCase.delete(id).then((deleteReceptionistResDto) => {
+      res.json(deleteReceptionistResDto.message)
+    })
+  }
 }
 
-/**
- * Encripta una contraseña utilizando el algoritmo SHA256.
- * @param {string} password - La contraseña del usuario.
- * @return {string} El hash de la contraseña en formato hexadecimal.
- */
+recepcionistaController.insertar = (adminCanCreateReceptionistUseCase) => {
+  return (req, res) => {
+    req.body.contrasenaRecepcionista = generarHashContraseña(req.body.contrasenaRecepcionista)
+    adminCanCreateReceptionistUseCase.create(req.body, req.body.correoRecepcionista).then((createReceptionistResDto) => {
+      res.json(createReceptionistResDto.message)
+    })
+  }
+}
+
 function generarHashContraseña (password) {
   const hash = crypto.createHash('sha256').update(password).digest('hex')
   return hash

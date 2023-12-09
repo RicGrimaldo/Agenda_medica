@@ -128,12 +128,12 @@ describe('Test admin can update receptionists use case', () => {
   })
 
   it('should update a receptionist', async () => {
-    const UpdateReceptionistResDto = await AdminCanUpdateReceptionistUC.update(RECEPTIONIST_DTO.id, RECEPTIONIST_DTO)
+    const UpdateReceptionistResDto = await AdminCanUpdateReceptionistUC.update(RECEPTIONIST_DTO.id, RECEPTIONIST_DTO, RECEPTIONIST_DTO.email)
     expect(UpdateReceptionistResDto.status).toBeTruthy()
   })
 
   it('should fail when updating a receptionist', async () => {
-    const UpdateReceptionistResDto = await AdminCanUpdateReceptionistUC.update(DUPLICATE_EMAIL_RECEPTIONIST_DTO.id, DUPLICATE_EMAIL_RECEPTIONIST_DTO)
+    const UpdateReceptionistResDto = await AdminCanUpdateReceptionistUC.update(DUPLICATE_EMAIL_RECEPTIONIST_DTO.id, DUPLICATE_EMAIL_RECEPTIONIST_DTO, DUPLICATE_EMAIL_RECEPTIONIST_DTO.email)
     expect(UpdateReceptionistResDto.status).toBeFalsy()
   })
 })

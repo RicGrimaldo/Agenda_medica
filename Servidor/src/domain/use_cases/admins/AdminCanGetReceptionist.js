@@ -12,7 +12,7 @@ module.exports = class AdminCanGetReceptionistUseCase {
   }
 
   async get (id) {
-    const receptionist = await this.receptionistStorage.findById(id)
+    const receptionist = await this.receptionistStorage.getById(id)
     if (receptionist) {
       return new GetReceptionistResDto(true, receptionist)
     }
