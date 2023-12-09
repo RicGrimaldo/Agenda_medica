@@ -91,16 +91,16 @@ medicoController.obtenerEspecialidades = (adminCanGetAllSpecialityUseCase) => {
 medicoController.agenda = (adminCanGetMedicDiaryUseCase) => {
   return (req, res) => {
     const id = req.params.id
-    adminCanGetMedicDiaryUseCase.getMedicDiary(id).then((getAllSpecialityResDto) => {
-      res.status(200).json(getAllSpecialityResDto.dtos.map((specialityDto) => {
-        return {
-          idCita: specialityDto.id,
-          nombrePaciente: specialityDto.name,
-          fecha: specialityDto.date,
-          horaInicio: specialityDto.startTime,
-          horaTermino: specialityDto.endTime
-        }
-      }))
+    adminCanGetMedicDiaryUseCase.getMedicDiary(id).then((getMedicDiaryResDto) => {
+      for (let i = 0; i < getMedicDiaryResDto.dtos.length; i++) {
+        const date = getMedicDiaryResDto.dtos[i].fecha
+        const formattedDate = date.toISOString().substring(0, 10)
+        const start = formattedDate.concat('T', getMedicDiaryResDto.dtos[i].horaInicio)
+        const end = formattedDate.concat('T', getMedicDiaryResDto.dtos[i].horaTermino)
+        getMedicDiaryResDto.dtos[i].start = start
+        getMedicDiaryResDto.dtos[i].end = end
+      }
+      res.json(getMedicDiaryResDto.dtos)
     })
   }
 }
