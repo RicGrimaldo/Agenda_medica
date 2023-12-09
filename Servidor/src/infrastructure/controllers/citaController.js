@@ -157,20 +157,30 @@ function obtenerDiasEntreFechas (fechaInicio, fechaFin) {
  * @param {*} req Contiene la petición del usuario
  * @param {*} res Contiene la respuesta que se enviara a la peticion
  */
-citaController.reservar = (req, res) => {
-  const idCita = req.params.id
-  const updated = req.body
+citaController.reservar = (userCanCreateAppointmentsUseCase) => {
+  return (req, res) => {
+    const idCita = req.params.id
+    const idPaciente = req.body.idPaciente
+    const modalidad = req.body.modalidad
 
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('UPDATE citas SET ? WHERE idCita = ?', [updated, idCita], async (err, result) => {
-      if (err) return res.send(err)
-
-      await notificarPorCorreo(conn, updated.idPaciente, updated.idMedico, idCita)
+    userCanCreateAppointmentsUseCase.createAppointment(idPaciente, idCita, modalidad).then((createAppointmentResDto) => {
+      if (!createAppointmentResDto.status) return res.status(401).send('Unauthorized')
       res.json(`Cita con id ${idCita} reservada.`)
     })
-  })
+  }
+  // const idCita = req.params.id
+  // const updated = req.body
+
+  // req.getConnection((err, conn) => {
+  //   if (err) return res.send(err)
+
+  //   conn.query('UPDATE citas SET ? WHERE idCita = ?', [updated, idCita], async (err, result) => {
+  //     if (err) return res.send(err)
+
+  //     await notificarPorCorreo(conn, updated.idPaciente, updated.idMedico, idCita)
+  //     res.json(`Cita con id ${idCita} reservada.`)
+  //   })
+  // })
 }
 
 /**

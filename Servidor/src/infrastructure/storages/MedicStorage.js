@@ -1,3 +1,4 @@
+const ExpMedicDto = require('../../domain/dtos/expanded/ExpMedicDto')
 const MedicEntity = require('../../domain/entities/MedicEntity')
 
 module.exports = class MedicStorage {
@@ -32,6 +33,30 @@ module.exports = class MedicStorage {
           []
         )
       })
+    }
+    return undefined
+  }
+
+  async getExpandedById (id) {
+    const query = `SELECT * FROM nimbo.medicos WHERE medicos.idMedico = "${id}" LIMIT 1;`
+    const results = await this.connector.runQuery(query).then(res => res.results)
+    if (results && results[0]) {
+      const medic = results[0]
+      return new ExpMedicDto(
+        medic.idMedico,
+        medic.nombreMedico,
+        medic.CURPMedico,
+        medic.fechaNacimientoMedico,
+        medic.correoMedico,
+        medic.telefonoMedico,
+        medic.direccionMedico,
+        medic.especialidadMedico,
+        medic.consultorioMedico,
+        medic.cedulaProfesionalMedico,
+        medic.contrasenaMedico,
+        medic.bloqueadoMedico,
+        []
+      )
     }
     return undefined
   }

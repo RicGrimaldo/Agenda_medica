@@ -18,4 +18,17 @@ module.exports = class AppointmentStorage {
       return { status: false, message: error.sqlMessage }
     }
   }
+
+  async createAppointments (patientId, appointmentDtos) {
+    if (patientId == null) return []
+    for (let appointmentDto of appointmentDtos ){
+      try{
+        const query = "UPDATE citas SET ? WHERE idCita = ?"
+        await this.connector.runQuery(query, appointmentDto, appointmentDto.patientId).then(res => res.results)
+        return { status: true, message: 'Citas actualizadas' }
+      } catch (error) {
+        return { status: false, message: error.sqlMessage }
+      }
+    }
+  }
 }

@@ -1,9 +1,22 @@
 const express = require('express')
 const citaRoutes = express.Router()
 const citaController = require('../controllers/citaController')
+const UserCanCreateAppointmentsUseCase = require('../../domain/use_cases/users/UserCanCreateAppointments')
+const PatientStorage = require('../storages/PatientStorage')
+const ScheduleStorage = require('../storages/ScheduleStorage')
+const MysqlConnector = require('../db/MysqlConnector')
+const AppointmentStorage = require('../storages/AppointmentStorage')
+const MedicStorage = require('../storages/MedicStorage')
+const connector = new MysqlConnector()
 
 citaRoutes.post('/crear/:idMedico', citaController.crearCitas)
-citaRoutes.put('/reservar/:id', citaController.reservar)
+citaRoutes.put('/reservar/:id', citaController.reservar(
+    new UserCanCreateAppointmentsUseCase(
+        new PatientStorage(connector), 
+        new ScheduleStorage(connector), 
+        new AppointmentStorage(connector), 
+        new MedicStorage(connector))
+))
 citaRoutes.post('/citasDisponibles', citaController.citasDisponibles)
 citaRoutes.get('/citasProgramadas', citaController.citasProgramadas)
 citaRoutes.put('/actualizar/:id', citaController.actualizar)
