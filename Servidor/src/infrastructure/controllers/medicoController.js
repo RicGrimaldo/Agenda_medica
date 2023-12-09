@@ -74,23 +74,20 @@ medicoController.insertar = (adminCanCreateMedicUseCase) => {
     })
   }
 }
-
-/**
- *Se obtienen las especialidades de la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-
-medicoController.obtenerEspecialidades = (req, res) => {
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('SELECT * FROM especialidades', (err, rows) => {
-      if (err) return res.send(err)
-      res.json(rows)
+medicoController.obtenerEspecialidades = (adminCanGetAllSpecialityUseCase) => {
+  return (req, res) => {
+    adminCanGetAllSpecialityUseCase.getAll().then((getAllSpecialityResDto) => {
+      res.status(200).json(getAllSpecialityResDto.dtos.map((specialityDto) => {
+        return {
+          idEspecialidad: specialityDto.id,
+          siglaEspecialidad: specialityDto.acronym,
+          nombreEspecialidad: specialityDto.name
+        }
+      }))
     })
-  })
+  }
 }
+
 /**
  *Se obtienen las citas atendidas y programadas del médico
  * @param {*} req Contiene la petición del usuario

@@ -6,11 +6,14 @@ const AdminCanGetMedicUseCase = require('../../domain/use_cases/admins/AdminCanG
 const AdminCanUpdateMedicUseCase = require('../../domain/use_cases/admins/AdminCanUpdateMedic')
 const AdminCanDeleteMedicUseCase = require('../../domain/use_cases/admins/AdminCanDeleteMedic')
 const AdminCanCreateMedicUseCase = require('../../domain/use_cases/admins/AdminCanCreateMedic')
+const AdminCanGetAllSpecialityUseCase = require('../../domain/use_cases/admins/AdminCanGetAllSpeciality')
+
 const UserStorage = require('../storages/UserStorage')
 const MysqlConnector = require('../db/MysqlConnector')
 const AppointmentStorage = require('../storages/AppointmentStorage')
 const connector = new MysqlConnector()
 const MedicStorage = require('../storages/MedicStorage')
+const SpecialityStorage = require('../storages/SpecialityStorage')
 
 medicoRoutes.get('/', medicoController.obtenerTodos(
   new AdminCanGetAllMedicUseCase(new MedicStorage(connector))
@@ -31,9 +34,15 @@ medicoRoutes.put('/actualizar/:id', medicoController.actualizar(
 medicoRoutes.delete('/eliminar/:id', medicoController.eliminar(
   new AdminCanDeleteMedicUseCase(new MedicStorage(connector))
 ))
+
+medicoRoutes.get('/especialidades', medicoController.obtenerEspecialidades(
+  new AdminCanGetAllSpecialityUseCase(new SpecialityStorage(connector))
+)
+)
+
 medicoRoutes.get('/agenda/:id', medicoController.agenda)
 medicoRoutes.get('/agendaDisponible/:id', medicoController.agendaDisponible)
-medicoRoutes.get('/especialidades', medicoController.obtenerEspecialidades)
+/* medicoRoutes.get('/especialidades', medicoController.obtenerEspecialidades) */
 medicoRoutes.get('/citasProgramadas/:id', medicoController.citasProgramadas)
 
 module.exports = medicoRoutes
