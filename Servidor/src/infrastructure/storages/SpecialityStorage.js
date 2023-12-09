@@ -1,4 +1,4 @@
-const SpecialityEntity = require('../../domain/entities/SpecialityEntity')
+const SpecialityDto = require('../../domain/dtos/SpecialityDto')
 module.exports = class SpecialityStorage {
   #connector
 
@@ -15,7 +15,7 @@ module.exports = class SpecialityStorage {
     const results = await this.connector.runQuery(query).then(res => res.results)
     if (results) {
       return results.map((speciality) => {
-        return new SpecialityEntity(
+        return new SpecialityDto(
           speciality.idEspecialidad,
           speciality.siglaEspecialidad,
           speciality.nombreEspecialidad
