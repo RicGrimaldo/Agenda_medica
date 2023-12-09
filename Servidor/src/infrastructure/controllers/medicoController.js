@@ -1,50 +1,52 @@
 const medicoController = {}
 const crypto = require('crypto')
 
-/**
- * Devuelve la información de todos los medicos en la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-medicoController.obtenerTodos = (req, res) => {
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('SELECT idMedico,nombreMedico,CURPMedico,fechaNacimientoMedico,correoMedico,telefonoMedico,direccionMedico,especialidadMedico,consultorioMedico,cedulaProfesionalMedico,bloqueadoMedico FROM medicos WHERE bloqueadoMedico=0 ORDER BY nombreMedico', (err, rows) => {
-      if (err) return res.send(err)
-      res.json(rows)
+medicoController.obtenerTodos = (adminCanGetAllMedicUseCase) => {
+  return (req, res) => {
+    adminCanGetAllMedicUseCase.getAll().then((getAllMedicResDto) => {
+      res.status(200).json(getAllMedicResDto.dtos.map((medicDto) => {
+        return {
+          idMedico: medicDto.id,
+          nombreMedico: medicDto.name,
+          CURPMedico: medicDto.curp,
+          fechaNacimientoMedico: medicDto.birthDate,
+          correoMedico: medicDto.email,
+          telefonoMedico: medicDto.phone,
+          direccionMedico: medicDto.address,
+          especialidadMedico: medicDto.specialityId,
+          consultorioMedico: medicDto.office,
+          cedulaProfesionalMedico: medicDto.professionalId,
+          bloqueadoMedico: medicDto.blocked
+        }
+      }))
     })
-  })
+  }
 }
 
-/**
- * Devuelve la información de un medico de la base de datos
- * apartir de su id
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-medicoController.obtener = (req, res) => {
-  const id = req.params.id
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('SELECT idMedico,nombreMedico,CURPMedico,fechaNacimientoMedico,correoMedico,telefonoMedico,direccionMedico,especialidadMedico,consultorioMedico,cedulaProfesionalMedico,bloqueadoMedico FROM medicos WHERE idMedico = ?', [id], (err, rows) => {
-      if (err) return res.send(err)
-
-      if (rows.length > 0) {
-        const medico = rows[0]
-        const fecha = new Date(medico.fechaNacimientoMedico)
-        medico.fechaNacimientoMedico = fecha.toISOString().slice(0, 10)
-
-        res.json(medico)
+medicoController.obtener = (adminCanGetMedicUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanGetMedicUseCase.get(id).then((getMedicResDto) => {
+      if (getMedicResDto.status) {
+        res.status(200).json({
+          idMedico: getMedicResDto.dto.id,
+          nombreMedico: getMedicResDto.dto.name,
+          CURPMedico: getMedicResDto.dto.curp,
+          fechaNacimientoMedico: getMedicResDto.dto.birthDate,
+          correoMedico: getMedicResDto.dto.email,
+          telefonoMedico: getMedicResDto.dto.phone,
+          direccionMedico: getMedicResDto.dto.address,
+          especialidadMedico: getMedicResDto.dto.specialityId,
+          consultorioMedico: getMedicResDto.dto.office,
+          cedulaProfesionalMedico: getMedicResDto.dto.professionalId,
+          bloqueadoMedico: getMedicResDto.dto.blocked
+        })
       } else {
-        res.status(404).send('No se pudo encontrar al medico con ID ' + id)
+        res.status(404).send(getMedicResDto.message)
       }
     })
-  })
+  }
 }
-
 /**
  * Actualiza la información de un medico de la base de datos
  * @param {*} req Contiene la petición del usuario

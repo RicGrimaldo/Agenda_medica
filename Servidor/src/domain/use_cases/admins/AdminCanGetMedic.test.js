@@ -16,7 +16,7 @@ class FakeMedicStorage {
     this.#medics.push(medicDto)
   }
 
-  findById (id) {
+  getById (id) {
     return new Promise((resolve) => {
       resolve(this.#medics.find(medicDto => medicDto.id === id))
     })
