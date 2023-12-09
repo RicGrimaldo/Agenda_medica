@@ -39,7 +39,7 @@ class FakePatientStorage {
   update (id, patientDto) {
     const index = this.#patients.findIndex(patient => patient.id === id)
     this.#patients[index] = patientDto
-    return { result: true, message: 'Paciente actualizado.' }
+    return { status: true, message: 'Paciente actualizado.' }
   }
 }
 
@@ -79,14 +79,14 @@ describe('Test admin can update patients use case', () => {
   const AGE = 22
   const GENRE = 'Masculino'
   const PASSWORD = 'contraseña123'
-  const BLOCKED = true
+  const BLOCKED = false
   const PATIENT_DTO = new PatientDto(1, NAME, CURP, BIRTH_DATE, EMAIL, PHONE, ADDRESS, AGE, GENRE, PASSWORD, BLOCKED)
   const DUPLICATE_EMAIL_PATIENT_DTO = new PatientDto(2, NAME, CURP, BIRTH_DATE, DUPLICATE_EMAIL, PHONE, ADDRESS, AGE, GENRE, PASSWORD, BLOCKED)
   const APPOINTMENT_DTOS = [
-    new AppointmentDto(1, 1, 1, AppointmentModalities.IN_PERSON, '', 1),
-    new AppointmentDto(2, 1, 2, AppointmentModalities.WEB, '', 1),
-    new AppointmentDto(3, 8, 6, AppointmentModalities.ON_TELEPHONE, '', 1),
-    new AppointmentDto(4, 9, 10, AppointmentModalities.IN_PERSON, '')
+    new AppointmentDto(1, null, 1, AppointmentModalities.IN_PERSON, '', 1),
+    new AppointmentDto(2, null, 2, AppointmentModalities.WEB, '', 1),
+    new AppointmentDto(3, null, 6, AppointmentModalities.ON_TELEPHONE, '', 1),
+    new AppointmentDto(4, null, 10, AppointmentModalities.IN_PERSON, '')
   ]
   let AdminCanUpdatePatientUC = null
   let userStorage = null

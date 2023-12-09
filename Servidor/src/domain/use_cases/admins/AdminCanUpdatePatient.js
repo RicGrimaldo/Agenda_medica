@@ -24,10 +24,13 @@ module.exports = class AdminCanUpdatePatientUseCase {
   }
 
   async update (id, patientDto) {
-    const validEmail = await this.validateEmail(id, patientDto.correoPaciente)
+    const email = patientDto.email || patientDto.correoPaciente
+    const blocked = patientDto.blocked || patientDto.bloqueadoPaciente
+
+    const validEmail = await this.validateEmail(id, email)
 
     if (validEmail) {
-      if (patientDto.bloqueadoPaciente) {
+      if (blocked) {
         const releaseAppointments = await this.appointmentStorage.releaseByPatientId(id)
         if (!releaseAppointments.status) {
           return new UpdatePatientResDto(releaseAppointments.status, releaseAppointments.message)

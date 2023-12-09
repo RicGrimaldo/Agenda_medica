@@ -74,88 +74,48 @@ pacienteController.insertar = (adminCanCreatePatientUseCase) => {
   }
 }
 
-pacienteController.historialClinico = (req, res) => {
-  const id = req.params.id
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('SELECT citas.fecha, citas.horaInicio, citas.modalidad, citas.notasConsultas, medicos.nombreMedico, pacientes.nombrePaciente, medicos.consultorioMedico,citas.idCita FROM medicos JOIN citas JOIN pacientes WHERE citas.idPaciente=pacientes.idPaciente AND medicos.idMedico=citas.idMedico AND pacientes.idPaciente= ? ORDER BY citas.fecha DESC', [id], (err, rows) => {
-      if (err) return res.send(err)
-
-      for (let i = 0; i < rows.length; i++) {
-        const fecha = new Date(rows[i].fecha)
-        rows[i].fecha = fecha.toISOString().slice(0, 10)
+pacienteController.historialClinico = (adminCanGetPatientMedicalHistoryUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanGetPatientMedicalHistoryUseCase.getPatientMedicalHistory(id).then((getPatientMedicalHistoryResDto) => {
+      for (let i = 0; i < getPatientMedicalHistoryResDto.length; i++) {
+        const date = new Date(getPatientMedicalHistoryResDto[i].fecha)
+        getPatientMedicalHistoryResDto[i].fecha = date.toISOString().slice(0, 10)
       }
-      res.json(rows)
+      res.json(getPatientMedicalHistoryResDto.dtos)
     })
-  })
+  }
 }
 
-pacienteController.descargarHistorialClinico = (req, res) => {
-  const id = req.params.id
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('SELECT citas.fecha, citas.horaInicio, citas.modalidad, citas.notasConsultas, medicos.nombreMedico, medicos.consultorioMedico,citas.idCita FROM medicos JOIN citas JOIN pacientes WHERE citas.idPaciente=pacientes.idPaciente AND medicos.idMedico=citas.idMedico AND pacientes.idPaciente= ? ORDER BY citas.idCita DESC', [id], async (err, rows) => {
-      if (err) return res.send(err)
-
-      // Inicilizamos el libro y hoja de excel
-      const libro = new ExcelJS.Workbook()
-      const hoja = libro.addWorksheet('Historial clinico')
-
-      // Colocamos los encabezados de las columnas
-      hoja.columns = [
-        { header: 'Fecha', key: 'fecha', width: 20 },
-        { header: 'Hora', key: 'horaInicio', width: 20 },
-        { header: 'Medico', key: 'nombreMedico', width: 35 },
-        { header: 'Consultorio', key: 'consultorioMedico', width: 20 },
-        { header: 'Modalidad', key: 'modalidad', width: 20 },
-        { header: 'Notas de consulta', key: 'notasConsultas', width: 60 }
-      ]
-
-      // Le ingresamos los filtros a las columnas
-      hoja.autoFilter = 'A1:F1'
-
-      for (let i = 0; i < rows.length; i++) {
-        const fecha = new Date(rows[i].fecha)
-        rows[i].fecha = fecha.toISOString().slice(0, 10)
-
-        // Agregamos los datos a la hoja de excell
-        hoja.addRow(rows[i]).commit()
-      }
-
-      // Preparamos los headers de la petición para enviar un archivo
+pacienteController.descargarHistorialClinico = (adminCanDownloadPatientMedicalHistoryUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanDownloadPatientMedicalHistoryUseCase.downloadMedicalHistory(id).then((downloadPatientMedicalHistoryRes) => {
+      if (!downloadPatientMedicalHistoryRes.status) return res.send(downloadPatientMedicalHistoryRes.message)
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
       res.setHeader('Content-Disposition', 'attachment; filename=Historial clinico.xlsx')
-      // Enviamos el archivo
-      libro.xlsx.write(res).then(() => {
+      downloadPatientMedicalHistoryRes.book.xlsx.write(res).then(() => {
         res.status(200).end()
       })
     })
-  })
+  }
 }
 
-pacienteController.agenda = (req, res) => {
-  const id = req.params.id
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('SELECT citas.idCita, medicos.nombreMedico, citas.fecha, citas.horaInicio, citas.horaTermino FROM medicos JOIN citas join pacientes WHERE medicos.idMedico = citas.idMedico AND pacientes.idPaciente = citas.idPaciente AND pacientes.idPaciente= ?', [id], (err, rows) => {
-      if (err) return res.send(err)
-      for (let i = 0; i < rows.length; i++) {
-        const fecha = rows[i].fecha
-        const fechaFormateada = fecha.toISOString().substring(0, 10) // "2023-05-07"
-        const start = fechaFormateada.concat('T', rows[i].horaInicio) // "2023-05-07T12:36:00"
-        const end = fechaFormateada.concat('T', rows[i].horaTermino) // "2023-05-07T12:36:00"
-        rows[i].start = start
-        rows[i].end = end
+pacienteController.agenda = (adminCanGetPatientDiaryUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanGetPatientDiaryUseCase.getPatientDiary(id).then((getPatientDiaryResDto) => {
+      for (let i = 0; i < getPatientDiaryResDto.dtos.length; i++) {
+        const date = getPatientDiaryResDto.dtos[i].fecha
+        const formattedDate = date.toISOString().substring(0, 10)
+        const start = formattedDate.concat('T', getPatientDiaryResDto.dtos[i].horaInicio)
+        const end = formattedDate.concat('T', getPatientDiaryResDto.dtos[i].horaTermino)
+        getPatientDiaryResDto.dtos[i].start = start
+        getPatientDiaryResDto.dtos[i].end = end
       }
-      res.json(rows)
+      res.json(getPatientDiaryResDto.dtos)
     })
-  })
+  }
 }
 
 function generarHashContraseña (password) {
