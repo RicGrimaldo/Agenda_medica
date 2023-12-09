@@ -1,6 +1,6 @@
 const NotFoundResDto = require('../../dtos/responses/DefaultResWithMsgDto')
 const ExcelJS = require('exceljs')
-module.exports = class AdminCanGetPatientDiaryUseCase {
+module.exports = class AdminCanDownloadPatientMedicalHistoryUseCase {
   #appointmentStorage
 
   constructor (appointmentStorage) {
@@ -12,7 +12,7 @@ module.exports = class AdminCanGetPatientDiaryUseCase {
   }
 
   async downloadMedicalHistory (patientId) {
-    const patientDiary = await this.appointmentStorage.findAllByPatientId(patientId)
+    const patientDiary = await this.appointmentStorage.findExcelMedicalHistoryByPatientId(patientId)
     if (patientDiary && patientDiary.length) {
       const book = new ExcelJS.Workbook()
       const file = book.addWorksheet('Historial clinico')
@@ -32,8 +32,8 @@ module.exports = class AdminCanGetPatientDiaryUseCase {
         file.addRow(patientDiary[i]).commit()
       }
 
-      return book
+      return {status: true, book: book}
     }
-    return new NotFoundResDto(false, 'No se encontraron citas del médico con ID ' + patientId)
+    return new NotFoundResDto(false, 'No se encontraron citas del paciente con ID ' + patientId)
   }
 }

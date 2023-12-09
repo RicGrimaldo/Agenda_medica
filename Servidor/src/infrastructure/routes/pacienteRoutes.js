@@ -10,6 +10,9 @@ const UserStorage = require('../storages/UserStorage')
 const AdminCanDeletePatientUseCase = require('../../domain/use_cases/admins/AdminCanDeletePatient')
 const AdminCanUpdatePatientUseCase = require('../../domain/use_cases/admins/AdminCanUpdatePatient')
 const AppointmentStorage = require('../storages/AppointmentStorage')
+const AdminCanGetPatientDiaryUseCase = require('../../domain/use_cases/admins/AdminCanGetPatientDiary')
+const AdminCanGetPatientMedicalHistoryUseCase = require('../../domain/use_cases/admins/AdminCanGetPatientMedicalHistory')
+const AdminCanDownloadPatientMedicalHistoryUseCase = require('../../domain/use_cases/admins/AdminCanDownloadPatientMedicalHistory')
 const connector = new MysqlConnector()
 
 pacienteRoutes.get('/', pacienteController.obtenerTodos(
@@ -27,8 +30,14 @@ pacienteRoutes.put('/actualizar/:id', pacienteController.actualizar(
 pacienteRoutes.delete('/eliminar/:id', pacienteController.eliminar(
   new AdminCanDeletePatientUseCase(new PatientStorage(connector))
 ))
-pacienteRoutes.get('/historialClinico/:id', pacienteController.historialClinico)
-pacienteRoutes.get('/historialClinico/:id/descargar', pacienteController.descargarHistorialClinico)
-pacienteRoutes.get('/agenda/:id', pacienteController.agenda)
+pacienteRoutes.get('/historialClinico/:id', pacienteController.historialClinico(
+  new AdminCanGetPatientMedicalHistoryUseCase(new AppointmentStorage(connector))
+))
+pacienteRoutes.get('/historialClinico/:id/descargar', pacienteController.descargarHistorialClinico(
+  new AdminCanDownloadPatientMedicalHistoryUseCase(new AppointmentStorage(connector))
+))
+pacienteRoutes.get('/agenda/:id', pacienteController.agenda(
+  new AdminCanGetPatientDiaryUseCase(new AppointmentStorage(connector))
+))
 
 module.exports = pacienteRoutes
