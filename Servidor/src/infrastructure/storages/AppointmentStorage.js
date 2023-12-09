@@ -18,4 +18,14 @@ module.exports = class AppointmentStorage {
       return { status: false, message: error.sqlMessage }
     }
   }
+
+  async releaseByMedicId (id) {
+    try {
+      const query = "UPDATE citas JOIN medicos ON citas.idMedico = medicos.idMedico SET citas.idPaciente = null, citas.modalidad = null WHERE medicos.bloqueadoMedico = 1 AND medicos.idMedico = ? AND CONCAT(citas.fecha, ' ', citas.horaInicio) >= NOW();"
+      await this.connector.runQuery(query, id).then(res => res.results)
+      return { status: true, message: 'Citas liberadas' }
+    } catch (error) {
+      return { status: false, message: error.sqlMessage }
+    }
+  }
 }
