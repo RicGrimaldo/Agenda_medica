@@ -69,4 +69,23 @@ module.exports = class MedicStorage {
       return { status: false, message: error.sqlMessage }
     }
   }
+
+  async delete (id) {
+    const query = 'DELETE FROM medicos WHERE idMedico = ?'
+    const results = await this.connector.runQuery(query, id).then(res => res.results)
+    if (results) {
+      return true
+    }
+    return undefined
+  }
+
+  async update (id, patient) {
+    try {
+      const query = 'UPDATE medicos SET ? WHERE idMedico = ?'
+      await this.connector.runQuery(query, [patient, id]).then(res => res.results)
+      return { status: true, message: '¡Medico actualizado!' }
+    } catch (error) {
+      return { status: false, message: error.sqlMessage }
+    }
+  }
 }

@@ -47,67 +47,23 @@ medicoController.obtener = (adminCanGetMedicUseCase) => {
     })
   }
 }
-/**
- * Actualiza la información de un medico de la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-medicoController.actualizar = (req, res) => {
-  const id = req.params.id
-  const updatedMedico = req.body
 
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    const correoMedico = updatedMedico.correoMedico // Nuevo correo del médico a actualizar
-
-    // Verificar si el correo ya existe en otros usuarios, excluyendo el médico actualizado
-    conn.query(
-      'SELECT COUNT(*) AS count FROM (SELECT correoMedico FROM medicos UNION SELECT correoRecepcionista FROM recepcionistas UNION SELECT correoPaciente FROM pacientes) AS usuarios WHERE correoMedico = ? AND correoMedico != (SELECT correoMedico FROM medicos WHERE idMedico = ?)',
-      [correoMedico, id],
-      (err, result) => {
-        if (err) return res.send(err)
-
-        const count = result[0].count
-
-        if (count > 0) {
-          // El correo ya existe en otro usuario, enviar una respuesta indicando el problema
-          return res.json('Correo inválido. El correo ya está registrado en otro usuario.')
-        } else {
-          conn.query('UPDATE medicos SET ? WHERE idMedico = ?', [updatedMedico, id], (err, result) => {
-            if (err) return res.send(err)
-
-            if (updatedMedico.bloqueadoMedico) {
-              conn.query("UPDATE citas JOIN medicos ON citas.idMedico = medicos.idMedico SET citas.idPaciente = null, citas.modalidad = null WHERE medicos.bloqueadoMedico = 1 AND medicos.idMedico = ? AND CONCAT(citas.fecha, ' ', citas.horaInicio) >= NOW();", [id], (err, result) => {
-                if (err) return res.send(err)
-              })
-            }
-
-            res.json('Médico actualizado.')
-          })
-        }
-      }
-    )
-  })
+medicoController.actualizar = (adminCanUpdateMedicUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanUpdateMedicUseCase.update(id, req.body).then((updateMedicResDto) => {
+      res.json(updateMedicResDto.message)
+    })
+  }
 }
 
-/**
- * Elimina la información de un medico de la base de datos
- * apartir de su id
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-medicoController.eliminar = (req, res) => {
-  const id = req.params.id
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('DELETE FROM medicos WHERE idMedico = ?', [id], (err, rows) => {
-      if (err) return res.send(err)
-      res.json('medico eliminado!')
+medicoController.eliminar = (adminCanDeleteMedicUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanDeleteMedicUseCase.delete(id).then((deleteMedicResDto) => {
+      res.json(deleteMedicResDto.message)
     })
-  })
+  }
 }
 
 medicoController.insertar = (adminCanCreateMedicUseCase) => {

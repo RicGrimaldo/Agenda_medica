@@ -23,8 +23,13 @@ medicoRoutes.get('/obtener/:id', medicoController.obtener(
   new AdminCanGetMedicUseCase(new MedicStorage(connector))
 ))
 
-medicoRoutes.put('/actualizar/:id', medicoController.actualizar)
-medicoRoutes.delete('/eliminar/:id', medicoController.eliminar)
+medicoRoutes.put('/actualizar/:id', medicoController.actualizar(
+  new AdminCanUpdateMedicUseCase(new UserStorage(connector), new MedicStorage(connector), new AppointmentStorage(connector))
+))
+
+medicoRoutes.delete('/eliminar/:id', medicoController.eliminar(
+  new AdminCanDeleteMedicUseCase(new MedicStorage(connector))
+))
 medicoRoutes.get('/agenda/:id', medicoController.agenda)
 medicoRoutes.get('/agendaDisponible/:id', medicoController.agendaDisponible)
 medicoRoutes.get('/especialidades', medicoController.obtenerEspecialidades)
