@@ -38,7 +38,7 @@ export class FormularioCitaComponent {
   isReadOnlyNombre = false
   especialidades: any = []
   perfil: any
-  constructor (
+  constructor(
     dashboardService: DashboardService,
     private readonly usuariosService: UsuariosService,
     private readonly medicoService: MedicoService,
@@ -71,7 +71,7 @@ export class FormularioCitaComponent {
   optionsPacientes: any = []
   filteredMedicos!: Observable<any>
   filteredPacientes!: Observable<any>
-  ngOnInit () {
+  ngOnInit() {
     this.isReadOnly = true
     //  Cuando el usuario se encuentra en el perfil paciente se obtiene sus datos
     this.route.params.subscribe((params) => {
@@ -111,7 +111,7 @@ export class FormularioCitaComponent {
   }
 
   // Función para obtener los datos del paciente
-  obtenerPaciente (id: any, event: any) {
+  obtenerPaciente(id: any, event: any) {
     this.pacienteService.obtenerPaciente(id).subscribe(
       (response) => {
         this.cita = response
@@ -122,7 +122,7 @@ export class FormularioCitaComponent {
     )
   }
 
-  formSubmit () {
+  formSubmit() {
     /*  Se deberán guardar los datos del formulario */
     if (this.cita.idMedico !== undefined && this.cita.hora !== undefined) {
       const cita = {
@@ -133,18 +133,22 @@ export class FormularioCitaComponent {
       }
       //  Se hace la reservación de la cita.
       this.citaService.reservarCita(cita, this.cita.hora).subscribe(
+        (response) => {
+          this._snackBar.open('Cita guardada', '', {
+            duration: 1000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          })
+          /*   Se redirecciona según el perfil del usuario */
+          if (this.perfil == 1) {
+            void this.router.navigate(['/dashboard/paciente/agenda', this.idPaciente])
+          } else {
+            void this.router.navigate(['/dashboard/recepcion/agenda-recepcion'])
+          }
+        }
       )
-      this._snackBar.open('Cita guardada', '', {
-        duration: 1000,
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom'
-      })
-      /*   Se redirecciona según el perfil del usuario */
-      if (this.perfil == 1) {
-        void this.router.navigate(['/dashboard/paciente/agenda', this.idPaciente])
-      } else {
-        void this.router.navigate(['/dashboard/recepcion/agenda-recepcion'])
-      }
+
+
     } else {
       this._snackBar.open('Verifica el nombre del medico', '', {
         duration: 1000,
@@ -155,7 +159,7 @@ export class FormularioCitaComponent {
   }
 
   /* Funciones para el filtrado */
-  private _setupFilterObservable (
+  private _setupFilterObservable(
     control: AbstractControl,
     options: any,
     property: string
@@ -166,7 +170,7 @@ export class FormularioCitaComponent {
     )
   }
 
-  private _filter (options: any, value: string, property: string): any {
+  private _filter(options: any, value: string, property: string): any {
     const filterValue = String(value).toLowerCase()
     return options.filter((option: any) =>
       option[property].toLowerCase().includes(filterValue)
@@ -174,13 +178,13 @@ export class FormularioCitaComponent {
   }
 
   /*   Funciones para cuando se cambia el valor del paciente,especialidad, fecha y médico */
-  onSelectionChangePaciente (event: any) {
+  onSelectionChangePaciente(event: any) {
     this.idPaciente = event.option.value.idPaciente
     this.obtenerPaciente(this.idPaciente, event)
     this.isReadOnly = true
   }
 
-  changeEspecialidad () {
+  changeEspecialidad() {
     if (Object.keys(this.medicos).length === 0) {
       return
     }
@@ -198,12 +202,12 @@ export class FormularioCitaComponent {
     }
   }
 
-  changeMedico () {
+  changeMedico() {
     this.cita.fecha = null
     this.cita.hora = null
   }
 
-  onFechaChange (event: any) {
+  onFechaChange(event: any) {
     console.log(this.cita.idMedico)
     if (this.cita.idMedico !== undefined) {
       const datos = {
