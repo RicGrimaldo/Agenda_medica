@@ -1,5 +1,3 @@
-const AppointmentMedicDto = require('../../domain/dtos/AppointmentMedicDto')
-
 module.exports = class AppointmentStorage {
   #connector
 
@@ -33,18 +31,21 @@ module.exports = class AppointmentStorage {
 
   async findAllByMedicId (id) {
     const query = 'SELECT citas.idCita, pacientes.nombrePaciente, citas.fecha, citas.horaInicio, citas.horaTermino FROM medicos JOIN citas join pacientes WHERE medicos.idMedico = citas.idMedico AND pacientes.idPaciente = citas.idPaciente AND medicos.idMedico= ?;'
-    const results = await this.connector.runQuery(query, id).then(res => res.results)
-    if (results) {
-      return results.map((appointment) => {
-        return new AppointmentMedicDto(
-          appointment.idCita,
-          appointment.nombrePaciente,
-          appointment.fecha,
-          appointment.horaInicio,
-          appointment.horaTermino
-        )
-      })
-    }
-    return undefined
+    return await this.connector.runQuery(query, id).then(res => res.results)
+  }
+
+  async findAllByPatientId (id) {
+    const query = 'SELECT citas.idCita, medicos.nombreMedico, citas.fecha, citas.horaInicio, citas.horaTermino FROM medicos JOIN citas join pacientes WHERE medicos.idMedico = citas.idMedico AND pacientes.idPaciente = citas.idPaciente AND pacientes.idPaciente= ?'
+    return await this.connector.runQuery(query, id).then(res => res.results)
+  }
+
+  async findMedicalHistoryByPatientId (id) {
+    const query = 'SELECT citas.fecha, citas.horaInicio, citas.modalidad, citas.notasConsultas, medicos.nombreMedico, pacientes.nombrePaciente, medicos.consultorioMedico,citas.idCita FROM medicos JOIN citas JOIN pacientes WHERE citas.idPaciente=pacientes.idPaciente AND medicos.idMedico=citas.idMedico AND pacientes.idPaciente= ? ORDER BY citas.fecha DESC'
+    return await this.connector.runQuery(query, id).then(res => res.results)
+  }
+
+  async findExcelMedicalHistoryByPatientId (id) {
+    const query = 'SELECT citas.fecha, citas.horaInicio, citas.modalidad, citas.notasConsultas, medicos.nombreMedico, medicos.consultorioMedico,citas.idCita FROM medicos JOIN citas JOIN pacientes WHERE citas.idPaciente=pacientes.idPaciente AND medicos.idMedico=citas.idMedico AND pacientes.idPaciente= ? ORDER BY citas.idCita DESC'
+    return await this.connector.runQuery(query, id).then(res => res.results)
   }
 }

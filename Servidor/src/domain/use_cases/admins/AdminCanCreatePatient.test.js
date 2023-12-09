@@ -32,7 +32,7 @@ class FakePatientStorage {
 
   create (patientDto) {
     this.#patients.push(patientDto)
-    return { result: true, message: '¡Paciente agregado!' }
+    return { status: true, message: '¡Paciente agregado!' }
   }
 }
 

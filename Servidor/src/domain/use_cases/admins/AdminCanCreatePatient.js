@@ -18,7 +18,8 @@ module.exports = class AdminCanCreatePatientUseCase {
   }
 
   async create (patientDto) {
-    const validEmail = await this.validateEmail(patientDto.correoPaciente)
+    const email = patientDto.email || patientDto.correoPaciente
+    const validEmail = await this.validateEmail(email)
 
     if (validEmail) {
       const patient = await this.patientStorage.create(patientDto)

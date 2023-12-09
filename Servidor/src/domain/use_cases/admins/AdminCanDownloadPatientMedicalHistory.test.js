@@ -19,7 +19,7 @@ class FakeAppointmentStorage {
     this.#appointments.push(appointmentDto)
   }
 
-  findAllByPatientId (patientId) {
+  findExcelMedicalHistoryByPatientId (patientId) {
     return new Promise((resolve) => {
       resolve(this.#appointments.filter(appointmentDto => appointmentDto.patientId === patientId))
     })
@@ -54,8 +54,8 @@ describe('Test admin can get all patient appointments use case', () => {
   it('should download a patient medical history', async () => {
     const patientId = 1
     const ExcelFile = await AdminCanDownloadPatientMedicalHistoryUC.downloadMedicalHistory(patientId)
-    expect(ExcelFile).toBeDefined()
-    expect(ExcelFile).toBeInstanceOf(ExcelJS.Workbook)
+    expect(ExcelFile.status).toBeTruthy()
+    expect(ExcelFile.book).toBeInstanceOf(ExcelJS.Workbook)
   })
 
   it('should fail when download a patient medical history', async () => {
