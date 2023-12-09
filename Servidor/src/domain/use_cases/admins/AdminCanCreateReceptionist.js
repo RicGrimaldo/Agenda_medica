@@ -17,8 +17,8 @@ module.exports = class AdminCanCreateReceptionistUseCase {
     return this.#receptionistStorage
   }
 
-  async create (receptionistDto) {
-    const validEmail = await this.validateEmail(receptionistDto.email)
+  async create (receptionistDto, email) {
+    const validEmail = await this.validateEmail(email)
 
     if (validEmail) {
       const receptionist = await this.receptionistStorage.create(receptionistDto)

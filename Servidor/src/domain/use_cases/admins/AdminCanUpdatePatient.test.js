@@ -179,7 +179,7 @@ describe('Test admin can update patients use case', () => {
   })
 
   it('should update a patient', async () => {
-    const UpdatePatientResDto = await AdminCanUpdatePatientUC.update(PATIENT_DTO.id, PATIENT_DTO)
+    const UpdatePatientResDto = await AdminCanUpdatePatientUC.update(PATIENT_DTO.id, PATIENT_DTO, PATIENT_DTO.email, PATIENT_DTO.blocked)
     expect(UpdatePatientResDto.status).toBeTruthy()
     appointmentStorage.appointments.forEach(appointment => {
       if (appointment.patientId === PATIENT_DTO.id) {
@@ -190,7 +190,7 @@ describe('Test admin can update patients use case', () => {
   })
 
   it('should fail when updating a patient', async () => {
-    const UpdatePatientResDto = await AdminCanUpdatePatientUC.update(DUPLICATE_EMAIL_PATIENT_DTO.id, DUPLICATE_EMAIL_PATIENT_DTO)
+    const UpdatePatientResDto = await AdminCanUpdatePatientUC.update(DUPLICATE_EMAIL_PATIENT_DTO.id, DUPLICATE_EMAIL_PATIENT_DTO, DUPLICATE_EMAIL_PATIENT_DTO.email, DUPLICATE_EMAIL_PATIENT_DTO.blocked)
     expect(UpdatePatientResDto.status).toBeFalsy()
   })
 })

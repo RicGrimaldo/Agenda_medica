@@ -99,12 +99,12 @@ describe('Test admin can create receptionists use case', () => {
   })
 
   it('should create a receptionist', async () => {
-    const CreateReceptionistResDto = await AdminCanCreateReceptionistUC.create(RECEPTIONIST_DTO)
+    const CreateReceptionistResDto = await AdminCanCreateReceptionistUC.create(RECEPTIONIST_DTO, RECEPTIONIST_DTO.email)
     expect(CreateReceptionistResDto.status).toBeTruthy()
   })
 
   it('should fail when creating a receptionist', async () => {
-    const CreateReceptionistResDto = await AdminCanCreateReceptionistUC.create(DUPLICATE_EMAIL_RECEPTIONIST_DTO)
+    const CreateReceptionistResDto = await AdminCanCreateReceptionistUC.create(DUPLICATE_EMAIL_RECEPTIONIST_DTO, DUPLICATE_EMAIL_RECEPTIONIST_DTO.email)
     expect(CreateReceptionistResDto.status).toBeFalsy()
   })
 })

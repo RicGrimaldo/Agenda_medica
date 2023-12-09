@@ -105,12 +105,12 @@ describe('Test admin can create patients use case', () => {
   })
 
   it('should create a patient', async () => {
-    const CreatePatientResDto = await AdminCanCreatePatientUC.create(PATIENT_DTO)
+    const CreatePatientResDto = await AdminCanCreatePatientUC.create(PATIENT_DTO, PATIENT_DTO.email)
     expect(CreatePatientResDto.status).toBeTruthy()
   })
 
   it('should fail when creating a patient', async () => {
-    const CreatePatientResDto = await AdminCanCreatePatientUC.create(DUPLICATE_EMAIL_PATIENT_DTO)
+    const CreatePatientResDto = await AdminCanCreatePatientUC.create(DUPLICATE_EMAIL_PATIENT_DTO, DUPLICATE_EMAIL_PATIENT_DTO.email)
     expect(CreatePatientResDto.status).toBeFalsy()
   })
 })

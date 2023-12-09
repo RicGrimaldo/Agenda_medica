@@ -16,7 +16,7 @@ class FakeReceptionistStorage {
     this.#receptionists.push(receptionistDto)
   }
 
-  findById (id) {
+  getById (id) {
     return new Promise((resolve) => {
       resolve(this.#receptionists.find(receptionistDto => receptionistDto.id === id))
     })

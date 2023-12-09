@@ -23,10 +23,7 @@ module.exports = class AdminCanUpdatePatientUseCase {
     return this.#appointmentStorage
   }
 
-  async update (id, patientDto) {
-    const email = patientDto.email || patientDto.correoPaciente
-    const blocked = patientDto.blocked || patientDto.bloqueadoPaciente
-
+  async update (id, patientDto, email, blocked) {
     const validEmail = await this.validateEmail(id, email)
 
     if (validEmail) {
