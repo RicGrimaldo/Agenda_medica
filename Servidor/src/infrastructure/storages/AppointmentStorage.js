@@ -1,3 +1,5 @@
+const AppointmentMedicDto = require('../../domain/dtos/AppointmentMedicDto')
+
 module.exports = class AppointmentStorage {
   #connector
 
@@ -27,5 +29,22 @@ module.exports = class AppointmentStorage {
     } catch (error) {
       return { status: false, message: error.sqlMessage }
     }
+  }
+
+  async findAllByMedicId (id) {
+    const query = 'SELECT citas.idCita, pacientes.nombrePaciente, citas.fecha, citas.horaInicio, citas.horaTermino FROM medicos JOIN citas join pacientes WHERE medicos.idMedico = citas.idMedico AND pacientes.idPaciente = citas.idPaciente AND medicos.idMedico= ?;'
+    const results = await this.connector.runQuery(query, id).then(res => res.results)
+    if (results) {
+      return results.map((appointment) => {
+        return new AppointmentMedicDto(
+          appointment.idCita,
+          appointment.nombrePaciente,
+          appointment.fecha,
+          appointment.horaInicio,
+          appointment.horaTermino
+        )
+      })
+    }
+    return undefined
   }
 }

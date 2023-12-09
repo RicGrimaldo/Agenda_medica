@@ -76,42 +76,33 @@ medicoController.insertar = (adminCanCreateMedicUseCase) => {
 }
 medicoController.obtenerEspecialidades = (adminCanGetAllSpecialityUseCase) => {
   return (req, res) => {
-    adminCanGetAllSpecialityUseCase.getAll().then((getAllSpecialityResDto) => {
-      res.status(200).json(getAllSpecialityResDto.dtos.map((specialityDto) => {
+    adminCanGetAllSpecialityUseCase.getAll().then((getMedicDiaryResDto) => {
+      res.status(200).json(getMedicDiaryResDto.dtos.map((medicDiaryDto) => {
         return {
-          idEspecialidad: specialityDto.id,
-          siglaEspecialidad: specialityDto.acronym,
-          nombreEspecialidad: specialityDto.name
+          idEspecialidad: medicDiaryDto.id,
+          siglaEspecialidad: medicDiaryDto.acronym,
+          nombreEspecialidad: medicDiaryDto.name
         }
       }))
     })
   }
 }
 
-/**
- *Se obtienen las citas atendidas y programadas del médico
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-medicoController.agenda = (req, res) => {
-  const id = req.params.id
-
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query('SELECT citas.idCita, pacientes.nombrePaciente, citas.fecha, citas.horaInicio, citas.horaTermino FROM medicos JOIN citas join pacientes WHERE medicos.idMedico = citas.idMedico AND pacientes.idPaciente = citas.idPaciente AND medicos.idMedico= ?', [id], (err, rows) => {
-      if (err) return res.send(err)
-      for (let i = 0; i < rows.length; i++) {
-        const fecha = rows[i].fecha
-        const fechaFormateada = fecha.toISOString().substring(0, 10) // "2023-05-07"
-        const start = fechaFormateada.concat('T', rows[i].horaInicio) // "2023-05-07T12:36:00"
-        const end = fechaFormateada.concat('T', rows[i].horaTermino) // "2023-05-07T12:36:00"
-        rows[i].start = start
-        rows[i].end = end
-      }
-      res.json(rows)
+medicoController.agenda = (adminCanGetMedicDiaryUseCase) => {
+  return (req, res) => {
+    const id = req.params.id
+    adminCanGetMedicDiaryUseCase.getMedicDiary(id).then((getAllSpecialityResDto) => {
+      res.status(200).json(getAllSpecialityResDto.dtos.map((specialityDto) => {
+        return {
+          idCita: specialityDto.id,
+          nombrePaciente: specialityDto.name,
+          fecha: specialityDto.date,
+          horaInicio: specialityDto.startTime,
+          horaTermino: specialityDto.endTime
+        }
+      }))
     })
-  })
+  }
 }
 /**
  *Se obtienen las citas disponibles del médico
