@@ -74,7 +74,7 @@ export class CitasProgramadasComponent {
   // Filtrado por idMedico y la CURP del paciente
   submit (): void {
     const filtrado = this.citasGeneral.filter((cita: any) => {
-      return cita.idMedico === this.idMedico && cita.CURPPaciente === this.curpPaciente
+      return cita.idMedico == this.idMedico && cita.CURPPaciente === this.curpPaciente
     })
 
     this.citas = filtrado
