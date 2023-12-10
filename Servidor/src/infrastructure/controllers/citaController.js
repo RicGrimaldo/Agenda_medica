@@ -157,31 +157,42 @@ function obtenerDiasEntreFechas (fechaInicio, fechaFin) {
  * @param {*} req Contiene la petición del usuario
  * @param {*} res Contiene la respuesta que se enviara a la peticion
  */
-citaController.reservar = (userCanCreateAppointmentsUseCase) => {
-  return (req, res) => {
+citaController.reservar = (userCanCreateAppointmentsUseCase, mailHelper, newAppointmentMail, qrHelper) => {
+  return async (req, res) => {
     const idCita = req.params.id
     const idPaciente = req.body.idPaciente
     const modalidad = req.body.modalidad
+    const fullUrl = req.protocol + '://' + req.get('host') + "/login"
+    console.log("Url: " + fullUrl)
 
-    userCanCreateAppointmentsUseCase.createAppointment(idPaciente, idCita, modalidad).then((createAppointmentResDto) => {
-      if (!createAppointmentResDto.status) return res.status(401).send('Unauthorized')
+    try {
+      const createAppointmentResDto = await userCanCreateAppointmentsUseCase.createAppointment(idPaciente, idCita, modalidad)
+
+      if (!createAppointmentResDto.status) {
+        return res.status(401).send('Unauthorized')
+      }
+
+      let qr = await qrHelper.getQr(fullUrl)
+      console.log("Exp: ")
+      console.log(createAppointmentResDto.expAppointmentDto)
+      let template = newAppointmentMail.getTemplate(createAppointmentResDto.expAppointmentDto, qr)
+      let correoPaciente = createAppointmentResDto.expAppointmentDto.patientDto.email
+      
+      await mailHelper.sendHtmlMail(
+        'Reservación de cita', 
+        correoPaciente, 
+        template,
+        'datos_cita.pdf'
+      )
+
       res.json(`Cita con id ${idCita} reservada.`)
-    })
+    } catch (error) {
+      console.error("Error al reservar la cita:", error)
+      res.status(500).send("Internal Server Error")
+    }
   }
-  // const idCita = req.params.id
-  // const updated = req.body
-
-  // req.getConnection((err, conn) => {
-  //   if (err) return res.send(err)
-
-  //   conn.query('UPDATE citas SET ? WHERE idCita = ?', [updated, idCita], async (err, result) => {
-  //     if (err) return res.send(err)
-
-  //     await notificarPorCorreo(conn, updated.idPaciente, updated.idMedico, idCita)
-  //     res.json(`Cita con id ${idCita} reservada.`)
-  //   })
-  // })
 }
+
 
 /**
  * Envia un correo con la información de la cita reservada

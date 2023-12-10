@@ -7,6 +7,9 @@ const ScheduleStorage = require('../storages/ScheduleStorage')
 const MysqlConnector = require('../db/MysqlConnector')
 const AppointmentStorage = require('../storages/AppointmentStorage')
 const MedicStorage = require('../storages/MedicStorage')
+const MailerHelper = require('../helpers/MailerHelper')
+const NewAppointmentMail = require('../mails/NewAppointmentMail')
+const QrHelper = require('../helpers/QrHelper')
 const connector = new MysqlConnector()
 
 citaRoutes.post('/crear/:idMedico', citaController.crearCitas)
@@ -15,7 +18,11 @@ citaRoutes.put('/reservar/:id', citaController.reservar(
         new PatientStorage(connector), 
         new ScheduleStorage(connector), 
         new AppointmentStorage(connector), 
-        new MedicStorage(connector))
+        new MedicStorage(connector)
+    ),
+    new MailerHelper(),
+    new NewAppointmentMail(),
+    new QrHelper()
 ))
 citaRoutes.post('/citasDisponibles', citaController.citasDisponibles)
 citaRoutes.get('/citasProgramadas', citaController.citasProgramadas)
