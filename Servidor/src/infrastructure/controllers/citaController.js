@@ -207,9 +207,9 @@ citaController.citasProgramadas = (userCanRequestIncomingAppointmentsUseCase) =>
     userCanRequestIncomingAppointmentsUseCase.getIncomingAppointments().then((expAppointmentDtos) => {
       res.status(200).json(expAppointmentDtos.map((expAppointmentDto) => {
         const fecha = new Date(expAppointmentDto.scheduleDto.startDateTime)
-        const hora = fecha.getUTCHours().toString().padStart(2, '0');
-        const minutos = fecha.getUTCMinutes().toString().padStart(2, '0');
-        const segundos = fecha.getUTCSeconds().toString().padStart(2, '0');
+        const hora = fecha.getHours().toString().padStart(2, '0');
+        const minutos = fecha.getMinutes().toString().padStart(2, '0');
+        const segundos = fecha.getSeconds().toString().padStart(2, '0');
         return {
           fecha: fecha.toISOString().slice(0,10),
           idMedico: expAppointmentDto.expMedicDto.id,
@@ -226,23 +226,36 @@ citaController.citasProgramadas = (userCanRequestIncomingAppointmentsUseCase) =>
     })
   }
 }
+
+citaController.actualizar = (userCanUpdateAnAppointmentUseCase) => {
+  return (req, res) => {
+    const appointmentId = req.params.id
+    const patientId = req.body.idPaciente
+    const modalidad = req.body.modalidad
+    const notas = req.body.notasConsultas
+    userCanUpdateAnAppointmentUseCase.updateAppointment(appointmentId, patientId, modalidad, notas).then((status) => {
+      if (!status) return res.send(err)
+      res.json('Cita actualizada')
+    })
+  }
+}
 /**
  * Actualiza la información de una cita en la base de datos
  * @param {*} req Contiene la petición del usuario
  * @param {*} res Contiene la respuesta que se enviara a la peticion
  */
-citaController.actualizar = (req, res) => {
-  const id = req.params.id
-  const updated = req.body
+// citaController.actualizar = (req, res) => {
+//   const id = req.params.id
+//   const updated = req.body
 
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
+//   req.getConnection((err, conn) => {
+//     if (err) return res.send(err)
 
-    conn.query('UPDATE citas SET ? WHERE idCita = ?', [updated, id], (err, result) => {
-      if (err) return res.send(err)
-      res.json(`Cita con id ${id} actualizada.`)
-    })
-  })
-}
+//     conn.query('UPDATE citas SET ? WHERE idCita = ?', [updated, id], (err, result) => {
+//       if (err) return res.send(err)
+//       res.json(`Cita con id ${id} actualizada.`)
+//     })
+//   })
+// }
 
 module.exports = citaController
