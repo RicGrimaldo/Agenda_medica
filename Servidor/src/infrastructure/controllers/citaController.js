@@ -1,6 +1,7 @@
 const QRCodeGenerator = require('qrcode')
 const HTMLtoPDF = require('html-pdf-node')
 const mailSystem = require('nodemailer')
+const dayjs = require('dayjs')
 
 const mailTransporter = mailSystem.createTransport({
   host: 'smtp-mail.outlook.com', // hostname
@@ -22,64 +23,77 @@ const citaController = {}
  * @param {*} req Contiene la petición del usuario
  * @param {*} res Contiene la respuesta que se enviara a la peticion
  */
-citaController.crearCitas = (req, res) => {
-  const idMedico = req.params.idMedico
-  const { fechaInicio, fechaFin, duracionCitas, horaInicio, horaFin, inicioAlmuerzo, finAlmuerzo } = req.body
-  if (!fechaInicio || !fechaFin || !duracionCitas || !horaInicio || !horaFin || !inicioAlmuerzo || !finAlmuerzo) return res.status(400).send('Datos incompletos')
+citaController.crearCitas = (medicCanCreateSchedulesUseCase) => {
+  return (req, res) => {
+    const idMedico = req.params.idMedico
+    const { fechaInicio, fechaFin, duracionCitas, horaInicio, horaFin, inicioAlmuerzo, finAlmuerzo } = req.body
+    const fechaInicioFormat = new Date(`${fechaInicio}T${horaInicio}`)
+    const fechaFinFormat = new Date(`${fechaFin}T${horaFin}`)
 
-  const diasAProgramar = obtenerDiasEntreFechas(fechaInicio, fechaFin)
-  const citas = []
-  const primerPeriodo = obtenerSeccionesEntreHoras(horaInicio, inicioAlmuerzo, duracionCitas)
-  primerPeriodo.forEach(seccion => {
-    citas.push(seccion)
-  })
-
-  const segundoPeriodo = obtenerSeccionesEntreHoras(finAlmuerzo, horaFin, duracionCitas)
-  segundoPeriodo.forEach(seccion => {
-    citas.push(seccion)
-  })
-
-  const fechasProgramadas = []
-  diasAProgramar.forEach(diaAProgramar => {
-    req.getConnection((err, conn) => {
-      if (err) return res.send(err)
-
-      conn.query('SELECT idCita FROM citas WHERE idMedico =  ? AND fecha = ?',
-        [idMedico, diaAProgramar], (err, rows) => {
-          if (err) return res.send(err)
-          if (rows.length > 0) {
-            fechasProgramadas.push(diaAProgramar)
-          }
-        })
+    medicCanCreateSchedulesUseCase.createSchedules(idMedico, fechaInicioFormat, fechaFinFormat, duracionCitas, inicioAlmuerzo, finAlmuerzo).then((status) => {
+      if (!status) return res.send('Error')
+      res.json('Cita creada') 
     })
-  })
-
-  setTimeout(() => {
-    if (fechasProgramadas.length === 0) {
-      diasAProgramar.forEach(diaAProgramar => {
-        citas.forEach(cita => {
-          const datosCita = {
-            idMedico,
-            fecha: diaAProgramar,
-            horaInicio: cita.horaInicio,
-            horaTermino: cita.horaFin
-          }
-
-          req.getConnection((err, conn) => {
-            if (err) return res.send(err)
-
-            conn.query('INSERT INTO citas set ?', [datosCita], (err, rows) => {
-              if (err) return res.send(err)
-            })
-          })
-        })
-      })
-      res.json('Citas generadas')
-    } else {
-      res.json('El/Los dia(s) ' + fechasProgramadas.toString() + ' ya se encuentra(n) programado(s)')
-    }
-  }, 1000)
+  }
 }
+// citaController.crearCitas = (req, res) => {
+//   const idMedico = req.params.idMedico
+//   const { fechaInicio, fechaFin, duracionCitas, horaInicio, horaFin, inicioAlmuerzo, finAlmuerzo } = req.body
+//   if (!fechaInicio || !fechaFin || !duracionCitas || !horaInicio || !horaFin || !inicioAlmuerzo || !finAlmuerzo) return res.status(400).send('Datos incompletos')
+
+//   const diasAProgramar = obtenerDiasEntreFechas(fechaInicio, fechaFin)
+//   const citas = []
+//   const primerPeriodo = obtenerSeccionesEntreHoras(horaInicio, inicioAlmuerzo, duracionCitas)
+//   primerPeriodo.forEach(seccion => {
+//     citas.push(seccion)
+//   })
+
+//   const segundoPeriodo = obtenerSeccionesEntreHoras(finAlmuerzo, horaFin, duracionCitas)
+//   segundoPeriodo.forEach(seccion => {
+//     citas.push(seccion)
+//   })
+
+//   const fechasProgramadas = []
+//   diasAProgramar.forEach(diaAProgramar => {
+//     req.getConnection((err, conn) => {
+//       if (err) return res.send(err)
+
+//       conn.query('SELECT idCita FROM citas WHERE idMedico =  ? AND fecha = ?',
+//         [idMedico, diaAProgramar], (err, rows) => {
+//           if (err) return res.send(err)
+//           if (rows.length > 0) {
+//             fechasProgramadas.push(diaAProgramar)
+//           }
+//         })
+//     })
+//   })
+
+//   setTimeout(() => {
+//     if (fechasProgramadas.length === 0) {
+//       diasAProgramar.forEach(diaAProgramar => {
+//         citas.forEach(cita => {
+//           const datosCita = {
+//             idMedico,
+//             fecha: diaAProgramar,
+//             horaInicio: cita.horaInicio,
+//             horaTermino: cita.horaFin
+//           }
+
+//           req.getConnection((err, conn) => {
+//             if (err) return res.send(err)
+
+//             conn.query('INSERT INTO citas set ?', [datosCita], (err, rows) => {
+//               if (err) return res.send(err)
+//             })
+//           })
+//         })
+//       })
+//       res.json('Citas generadas')
+//     } else {
+//       res.json('El/Los dia(s) ' + fechasProgramadas.toString() + ' ya se encuentra(n) programado(s)')
+//     }
+//   }, 1000)
+// }
 
 /**
  * Regresa un arreglo con las secciones de un intervalo de horas
@@ -193,8 +207,8 @@ citaController.citasDisponibles = (userCanRequestAvailableSchedulesUseCase) => {
       res.status(200).json(availableScheduleDtos.map((scheduleDto) => {
         return {
           idCita: scheduleDto.id,
-          horaInicio: scheduleDto.startDateTime,
-          horaTermino: scheduleDto.endDateTime,
+          horaInicio: dayjs(scheduleDto.startDateTime).format('HH:mm:ss'),
+          horaTermino: dayjs(scheduleDto.endDateTime).format('HH:mm:ss'),
           idMedico: scheduleDto.medicId
         }
       }))
@@ -234,28 +248,10 @@ citaController.actualizar = (userCanUpdateAnAppointmentUseCase) => {
     const modalidad = req.body.modalidad
     const notas = req.body.notasConsultas
     userCanUpdateAnAppointmentUseCase.updateAppointment(appointmentId, patientId, modalidad, notas).then((status) => {
-      if (!status) return res.send(err)
+      if (!status) return res.send('Error')
       res.json('Cita actualizada')
     })
   }
 }
-/**
- * Actualiza la información de una cita en la base de datos
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-// citaController.actualizar = (req, res) => {
-//   const id = req.params.id
-//   const updated = req.body
-
-//   req.getConnection((err, conn) => {
-//     if (err) return res.send(err)
-
-//     conn.query('UPDATE citas SET ? WHERE idCita = ?', [updated, id], (err, result) => {
-//       if (err) return res.send(err)
-//       res.json(`Cita con id ${id} actualizada.`)
-//     })
-//   })
-// }
 
 module.exports = citaController

@@ -3,8 +3,8 @@ const dayjs = require('dayjs')
 module.exports = class NewAppointmentMail {
   getTemplate (expAppointmentDto, qr) {
     const DATE = dayjs(expAppointmentDto.scheduleDto.startDateTime).format('DD/MM/YYYY')
-    const TIME_START = expAppointmentDto.scheduleDto.startDateTime
-    const TIME_END = expAppointmentDto.scheduleDto.endDateTime
+    const TIME_START = dayjs(expAppointmentDto.scheduleDto.startDateTime).format('HH:mm:ss')
+    const TIME_END = dayjs(expAppointmentDto.scheduleDto.endDateTime).format('HH:mm:ss')
     const MEDIC_NAME = expAppointmentDto.expMedicDto.name
     const MEDIC_SPECIALITY = expAppointmentDto.expMedicDto.specialityDto.name
     const MEDIC_OFFICE = expAppointmentDto.expMedicDto.office

@@ -41,10 +41,13 @@ module.exports = class ScheduleStorage {
             const results = await this.connector.runQuery(query, [medicId, startDateTime]).then(res => res.results)
             if (results) {
                 return results.map((schedule) => {
+                    const fecha = schedule.fecha.toISOString().split('T')[0]
+                    const fechaHoraInicio = `${fecha}T${schedule.horaInicio}`
+                    const fechaHoraFin = `${fecha}T${schedule.horaTermino}`
                     return new ScheduleDto(
                         schedule.idCita,
-                        schedule.horaInicio,
-                        schedule.horaTermino,
+                        new Date(fechaHoraInicio),
+                        new Date(fechaHoraFin),
                         schedule.idMedico
                     )
                 })

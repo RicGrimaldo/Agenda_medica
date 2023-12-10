@@ -13,9 +13,14 @@ const QrHelper = require('../helpers/QrHelper')
 const UserCanRequestAvailableSchedulesUseCase = require('../../domain/use_cases/users/UserCanRequestAvailableSchedules')
 const UserCanRequestIncomingAppointmentsUseCase = require('../../domain/use_cases/users/UserCanRequestIncomingAppointments')
 const UserCanUpdateAnAppointmentUseCase = require('../../domain/use_cases/users/UserCanUpdateAnAppointment')
+const MedicCanCreateSchedulesUseCase = require('../../domain/use_cases/medics/MedicCanCreateSchedules')
 const connector = new MysqlConnector()
 
-citaRoutes.post('/crear/:idMedico', citaController.crearCitas)
+citaRoutes.post('/crear/:idMedico', citaController.crearCitas(
+    new MedicCanCreateSchedulesUseCase(
+        new MedicStorage(connector)
+    )
+))
 citaRoutes.put('/reservar/:id', citaController.reservar(
     new UserCanCreateAppointmentsUseCase(
         new PatientStorage(connector), 

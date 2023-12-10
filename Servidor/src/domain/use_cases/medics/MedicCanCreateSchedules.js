@@ -13,10 +13,17 @@ module.exports = class MedicCanCreateSchedulesUseCase {
 
   async createSchedules (medicId, workStart, workEnd, duration, lunchStart, lunchEnd) {
     const medicEntity = await this.medicStorage.getById(medicId)
+    console.log("Obtenemos: ")
+    console.log(medicEntity)
+    console.log(this.#validateDates(workStart, workEnd, lunchStart, lunchEnd))
     if (medicEntity && this.#validateDates(workStart, workEnd, lunchStart, lunchEnd)) {
       medicEntity.addMultipleSchedules(workStart, lunchStart, duration)
       medicEntity.addMultipleSchedules(lunchEnd, workEnd, duration)
+      console.log("MedicEntity: ")
+      console.log(medicEntity)
       const ids = await this.medicStorage.createSchedules(medicEntity.id, medicEntity.scheduleDtos)
+      console.log("Ids: ")
+      console.log(ids)
       return ids.length > 0
     } else {
       return false
