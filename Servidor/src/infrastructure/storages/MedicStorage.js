@@ -45,7 +45,6 @@ module.exports = class MedicStorage {
     const results = await this.connector.runQuery(query, id).then(res => res.results)
     if (results && results[0]) {
       const medic = results[0]
-      console.log(medic)
       return new MedicEntity(
         medic.idMedico,
         medic.nombreMedico,
@@ -62,6 +61,7 @@ module.exports = class MedicStorage {
         []
       )
     }
+    return undefined
   }
 
   async getExpandedById (id) {
@@ -100,8 +100,10 @@ module.exports = class MedicStorage {
     let ids = []
     if (medicId == null) return []
     for (let scheduleDto of scheduleDtos ) {
+      console.log("Empecemos por ")
+      console.log(scheduleDto)
       try {
-        const fecha = dayjs(scheduleDto.startDateTime).format('DD-MM-YYYY')
+        const fecha = dayjs(scheduleDto.startDateTime).format('YYYY-MM-DD')
         const horaInicio = dayjs(scheduleDto.startDateTime).format('HH:mm:ss')
         const horaTermino = dayjs(scheduleDto.endDateTime).format('HH:mm:ss')
 

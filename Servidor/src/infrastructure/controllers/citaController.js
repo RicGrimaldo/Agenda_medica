@@ -1,20 +1,4 @@
-const QRCodeGenerator = require('qrcode')
-const HTMLtoPDF = require('html-pdf-node')
-const mailSystem = require('nodemailer')
 const dayjs = require('dayjs')
-
-const mailTransporter = mailSystem.createTransport({
-  host: 'smtp-mail.outlook.com', // hostname
-  secureConnection: false, // TLS requires secureConnection to be false
-  port: 587, // port for secure SMTP
-  tls: {
-    ciphers: 'SSLv3'
-  },
-  auth: {
-    user: 'NimboApi@outlook.com',
-    pass: 'contrasenasegura123'
-  }
-})
 
 const citaController = {}
 
@@ -24,120 +8,47 @@ const citaController = {}
  * @param {*} res Contiene la respuesta que se enviara a la peticion
  */
 citaController.crearCitas = (medicCanCreateSchedulesUseCase) => {
-  return (req, res) => {
-    const idMedico = req.params.idMedico
-    const { fechaInicio, fechaFin, duracionCitas, horaInicio, horaFin, inicioAlmuerzo, finAlmuerzo } = req.body
-    const fechaInicioFormat = new Date(`${fechaInicio}T${horaInicio}`)
-    const fechaFinFormat = new Date(`${fechaFin}T${horaFin}`)
+  return async (req, res) => {
+    let statusError = false;
+    const idMedico = req.params.idMedico;
+    const { fechaInicio, fechaFin, duracionCitas, horaInicio, horaFin, inicioAlmuerzo, finAlmuerzo } = req.body;
 
-    medicCanCreateSchedulesUseCase.createSchedules(idMedico, fechaInicioFormat, fechaFinFormat, duracionCitas, inicioAlmuerzo, finAlmuerzo).then((status) => {
-      if (!status) return res.send('Error')
-      res.json('Cita creada') 
+    if (!fechaInicio || !fechaFin || !duracionCitas || !horaInicio || !horaFin || !inicioAlmuerzo || !finAlmuerzo) {
+      return res.send('Datos incompletos')
+    }
+
+    const diasAProgramar = obtenerDiasEntreFechas(fechaInicio, fechaFin)
+
+    if (diasAProgramar.length === 0) return res.send('Datos incorrectos')
+
+    const promises = diasAProgramar.map((diaAProgramar) => {
+      const WORK_START = dayjs(diaAProgramar + horaInicio)
+      const WORK_END = dayjs(diaAProgramar + horaFin)
+      const LUNCH_START = dayjs(diaAProgramar + inicioAlmuerzo)
+      const LUNCH_END = dayjs(diaAProgramar + finAlmuerzo)
+
+      return medicCanCreateSchedulesUseCase.createSchedules(idMedico, WORK_START, WORK_END, duracionCitas, LUNCH_START, LUNCH_END)
     })
-  }
-}
-// citaController.crearCitas = (req, res) => {
-//   const idMedico = req.params.idMedico
-//   const { fechaInicio, fechaFin, duracionCitas, horaInicio, horaFin, inicioAlmuerzo, finAlmuerzo } = req.body
-//   if (!fechaInicio || !fechaFin || !duracionCitas || !horaInicio || !horaFin || !inicioAlmuerzo || !finAlmuerzo) return res.status(400).send('Datos incompletos')
 
-//   const diasAProgramar = obtenerDiasEntreFechas(fechaInicio, fechaFin)
-//   const citas = []
-//   const primerPeriodo = obtenerSeccionesEntreHoras(horaInicio, inicioAlmuerzo, duracionCitas)
-//   primerPeriodo.forEach(seccion => {
-//     citas.push(seccion)
-//   })
-
-//   const segundoPeriodo = obtenerSeccionesEntreHoras(finAlmuerzo, horaFin, duracionCitas)
-//   segundoPeriodo.forEach(seccion => {
-//     citas.push(seccion)
-//   })
-
-//   const fechasProgramadas = []
-//   diasAProgramar.forEach(diaAProgramar => {
-//     req.getConnection((err, conn) => {
-//       if (err) return res.send(err)
-
-//       conn.query('SELECT idCita FROM citas WHERE idMedico =  ? AND fecha = ?',
-//         [idMedico, diaAProgramar], (err, rows) => {
-//           if (err) return res.send(err)
-//           if (rows.length > 0) {
-//             fechasProgramadas.push(diaAProgramar)
-//           }
-//         })
-//     })
-//   })
-
-//   setTimeout(() => {
-//     if (fechasProgramadas.length === 0) {
-//       diasAProgramar.forEach(diaAProgramar => {
-//         citas.forEach(cita => {
-//           const datosCita = {
-//             idMedico,
-//             fecha: diaAProgramar,
-//             horaInicio: cita.horaInicio,
-//             horaTermino: cita.horaFin
-//           }
-
-//           req.getConnection((err, conn) => {
-//             if (err) return res.send(err)
-
-//             conn.query('INSERT INTO citas set ?', [datosCita], (err, rows) => {
-//               if (err) return res.send(err)
-//             })
-//           })
-//         })
-//       })
-//       res.json('Citas generadas')
-//     } else {
-//       res.json('El/Los dia(s) ' + fechasProgramadas.toString() + ' ya se encuentra(n) programado(s)')
-//     }
-//   }, 1000)
-// }
-
-/**
- * Regresa un arreglo con las secciones de un intervalo de horas
- * @param {string} horaInicio hora inicial del intervalo a seccionar
- * @param {string} horaFin hora final del intervalo a seccionar
- * @param {string} tiempoSeccion Tiempo a seccionar en entre las horas
- */
-function obtenerSeccionesEntreHoras (horaInicio, horaFin, tiempoSeccion) {
-  let horaInicioSeccion = horaInicio
-  const secciones = []
-
-  while (horaInicioSeccion < horaFin) {
-    const [horasString, minutosString] = horaInicioSeccion.split(':')
-    let horas = parseInt(horasString)
-    let minutos = parseInt(minutosString)
-
-    minutos += parseInt(tiempoSeccion)
-    if (minutos >= 60) {
-      horas++
-      minutos -= 60
-    }
-
-    // Formateamos la hora para poder compararlas
-    const horasStringFinSeccion = horas.toString().padStart(2, '0')
-    const minutosStringFinSeccion = minutos.toString().padStart(2, '0')
-    const horaFinSeccion = `${horasStringFinSeccion}:${minutosStringFinSeccion}`
-
-    if (horaFinSeccion <= horaFin) {
-      const seccion = {
-        horaInicio: horaInicioSeccion,
-        horaFin: horaFinSeccion
+  await Promise.all(promises)
+    .then((statuses) => {
+      if (statuses.some((status) => !status)) {
+        statusError = true
       }
-      secciones.push(seccion)
-      horaInicioSeccion = horaFinSeccion
+    })
+    .catch((error) => {
+      console.error('Error al ejecutar promesas:', error)
+      statusError = true
+    })
+    
+    if (statusError) {
+      res.json('Error al crear las citas, datos incorrectos')
+    } else {
+      res.json('Citas creada')
     }
   }
-  return secciones
 }
 
-/**
- * Regresa un arreglo de los dias con formado YYYY-MM-DD a partir de un intervalo de fechas
- * @param {DATE} fechaInicio Fecha inicial del intervalo de fechas a obtener
- * @param {Date} fechaFin Fecha final del intervalo de fechas a obtener
- */
 function obtenerDiasEntreFechas (fechaInicio, fechaFin) {
   const dias = []
 
@@ -165,6 +76,7 @@ function obtenerDiasEntreFechas (fechaInicio, fechaFin) {
   }
   return dias
 }
+
 citaController.reservar = (userCanCreateAppointmentsUseCase, mailHelper, newAppointmentMail, qrHelper) => {
   return async (req, res) => {
     const idCita = req.params.id

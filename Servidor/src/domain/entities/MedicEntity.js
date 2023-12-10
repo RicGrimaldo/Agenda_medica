@@ -141,9 +141,12 @@ module.exports = class MedicEntity {
   }
 
   addMultipleSchedules (startDateTime, endDateTime, duration) {
+    console.log("Recibimos como entrada " + startDateTime + ", salida " + endDateTime + " de duración de " + duration )
     const DATE_TIME_LIMIT = dayjs(endDateTime)
+    console.log("El tiempo limite es " + DATE_TIME_LIMIT.format())
     const DURATION_UNIT = 'minutes'
     let currentStart = dayjs(startDateTime)
+    console.log("Y el actual día es: " + currentStart.format())
     let currentEnd = currentStart.add(duration, DURATION_UNIT)
 
     while (currentStart.isSameOrBefore(DATE_TIME_LIMIT) && currentEnd.isSameOrBefore(DATE_TIME_LIMIT)) {
@@ -151,13 +154,18 @@ module.exports = class MedicEntity {
       currentStart = currentEnd
       currentEnd = currentStart.add(duration, DURATION_UNIT)
     }
+    console.log("Los schedules son: ")
+    for (let scheduleDto of this.#scheduleDtos){
+      console.log(dayjs(scheduleDto.startDateTime).format())
+      console.log(dayjs(scheduleDto.endDateTime).format())
+    }
   }
 
   addSchedule (startDateTime, endDateTime) {
     if (!this.#validateDatesAreCorrect(startDateTime, endDateTime)) throw new Error('Invalid date!')
     if (!this.#validateDatesAreNotOverlapping(startDateTime, endDateTime)) throw new Error('Invalid date!')
     if (!this.#validateDayIsAvailable([startDateTime, endDateTime])) throw new Error('Day unavailable!')
-    this.scheduleDtos.push(new ScheduleDto(undefined, startDateTime, endDateTime, this.id))
+    this.scheduleDtos.push(new ScheduleDto(undefined, new Date(startDateTime), new Date(endDateTime), this.id))
   }
 
   #validateDatesAreCorrect (startDateTime, endDateTime) {
