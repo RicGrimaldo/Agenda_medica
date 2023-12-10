@@ -40,6 +40,7 @@ module.exports = class UserCanCreateAppointmentsUseCase {
         patientEntity.addAppointment(await this.appointmentStorage.getIncoming(), scheduleDto.id, modalityId)
         const appointmentDto = patientEntity.appointmentDtos[patientEntity.appointmentDtos.length - 1]
         const ids = await this.appointmentStorage.createAppointments(patientEntity.id, [appointmentDto])
+
         if (ids.length > 0) {
           appointmentDto.id = ids[0]
           const patientDto = new PatientMapper().format(patientEntity)
@@ -51,6 +52,7 @@ module.exports = class UserCanCreateAppointmentsUseCase {
         return new CreateAppointmentResDto(false, undefined)
       }
     }
+    console.log("No se cumple")
     return new CreateAppointmentResDto(false, undefined)
   }
 }

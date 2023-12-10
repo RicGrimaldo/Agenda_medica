@@ -14,8 +14,8 @@ module.exports = class MedicCanCreateSchedulesUseCase {
   async createSchedules (medicId, workStart, workEnd, duration, lunchStart, lunchEnd) {
     const medicEntity = await this.medicStorage.getById(medicId)
     if (medicEntity && this.#validateDates(workStart, workEnd, lunchStart, lunchEnd)) {
-      medicEntity.addMultipleSchedules(workStart, lunchStart, duration)
-      medicEntity.addMultipleSchedules(lunchEnd, workEnd, duration)
+      medicEntity.addMultipleSchedules(workStart.format(), lunchStart.format(), duration)
+      medicEntity.addMultipleSchedules(lunchEnd.format(), workEnd.format(), duration)
       const ids = await this.medicStorage.createSchedules(medicEntity.id, medicEntity.scheduleDtos)
       return ids.length > 0
     } else {
@@ -23,12 +23,14 @@ module.exports = class MedicCanCreateSchedulesUseCase {
     }
   }
 
-  #validateDates (workStart, workEnd, lunchStart, lunchEnd) {
-    const W_START = dayjs(workStart)
-    const W_END = dayjs(workEnd)
-    const L_START = dayjs(lunchStart)
-    const L_END = dayjs(lunchEnd)
-    return W_START.isBefore(W_END) && L_START.isAfter(W_START) && L_END.isAfter(W_START) &&
-      L_START.isBefore(W_END) && L_END.isBefore(W_END) && L_START.isBefore(L_END)
+  #validateDates(workStart, workEnd, lunchStart, lunchEnd) {
+    return (
+      workStart.isBefore(workEnd) &&
+      workEnd.isAfter(workStart) &&
+      lunchEnd.isAfter(workStart) &&
+      lunchStart.isBefore(workEnd) &&
+      lunchEnd.isBefore(workEnd) &&
+      lunchStart.isBefore(lunchEnd)
+    )
   }
 }
