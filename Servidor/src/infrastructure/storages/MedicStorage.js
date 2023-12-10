@@ -100,8 +100,6 @@ module.exports = class MedicStorage {
     let ids = []
     if (medicId == null) return []
     for (let scheduleDto of scheduleDtos ) {
-      console.log("Empecemos por ")
-      console.log(scheduleDto)
       try {
         const fecha = dayjs(scheduleDto.startDateTime).format('YYYY-MM-DD')
         const horaInicio = dayjs(scheduleDto.startDateTime).format('HH:mm:ss')
