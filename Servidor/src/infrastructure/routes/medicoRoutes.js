@@ -9,7 +9,7 @@ const AdminCanCreateMedicUseCase = require('../../domain/use_cases/admins/AdminC
 const AdminCanGetAllSpecialityUseCase = require('../../domain/use_cases/admins/AdminCanGetAllSpeciality')
 const AdminCanGetMedicDiaryUseCase = require('../../domain/use_cases/admins/AdminCanGetMedicDiary')
 const AdminCanGetAvailableMedicDiaryUseCase = require('../../domain/use_cases/admins/AdminCanGetAvailableMedicDiary')
-
+const AdminCanGetReservedMedicDiaryUseCase = require('../../domain/use_cases/admins/AdminCanGetReservedMedicDiary')
 const UserStorage = require('../storages/UserStorage')
 const MysqlConnector = require('../db/MysqlConnector')
 const AppointmentStorage = require('../storages/AppointmentStorage')
@@ -46,12 +46,15 @@ medicoRoutes.get('/agenda/:id', medicoController.agenda(
   new AdminCanGetMedicDiaryUseCase(new AppointmentStorage(connector))
 )
 )
+
 medicoRoutes.get('/agendaDisponible/:id', medicoController.agendaDisponible(
   new AdminCanGetAvailableMedicDiaryUseCase(new AppointmentStorage(connector))
 )
 )
-/* medicoRoutes.get('/agendaDisponible/:id', medicoController.agendaDisponible) */
 
-medicoRoutes.get('/citasProgramadas/:id', medicoController.citasProgramadas)
+medicoRoutes.get('/citasProgramadas/:id', medicoController.citasProgramadas(
+  new AdminCanGetReservedMedicDiaryUseCase(new AppointmentStorage(connector))
+)
+)
 
 module.exports = medicoRoutes
