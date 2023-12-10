@@ -11,6 +11,7 @@ const MailerHelper = require('../helpers/MailerHelper')
 const NewAppointmentMail = require('../mails/NewAppointmentMail')
 const QrHelper = require('../helpers/QrHelper')
 const UserCanRequestAvailableSchedulesUseCase = require('../../domain/use_cases/users/UserCanRequestAvailableSchedules')
+const UserCanRequestIncomingAppointmentsUseCase = require('../../domain/use_cases/users/UserCanRequestIncomingAppointments')
 const connector = new MysqlConnector()
 
 citaRoutes.post('/crear/:idMedico', citaController.crearCitas)
@@ -31,7 +32,14 @@ citaRoutes.post('/citasDisponibles', citaController.citasDisponibles(
         new ScheduleStorage(connector)
     )
 ))
-citaRoutes.get('/citasProgramadas', citaController.citasProgramadas)
+citaRoutes.get('/citasProgramadas', citaController.citasProgramadas(
+    new UserCanRequestIncomingAppointmentsUseCase(
+        new PatientStorage(connector),
+        new ScheduleStorage(connector),
+        new AppointmentStorage(connector),
+        new MedicStorage(connector)
+    )
+))
 citaRoutes.put('/actualizar/:id', citaController.actualizar)
 
 module.exports = citaRoutes

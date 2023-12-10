@@ -16,10 +16,13 @@ module.exports = class ScheduleStorage {
         const results = await this.connector.runQuery(query).then(res => res.results)
         if (results && results[0]) {
             const scheduleDto = results[0]
+            const fecha = scheduleDto.fecha.toISOString().split('T')[0]
+            const fechaHoraInicio = `${fecha}T${scheduleDto.horaInicio}`
+            const fechaHoraFin = `${fecha}T${scheduleDto.horaTermino}`
             return new ScheduleDto(
                 scheduleDto.idCita,
-                scheduleDto.horaInicio,
-                scheduleDto.horaTermino,
+                new Date(fechaHoraInicio),
+                new Date(fechaHoraFin),
                 scheduleDto.idMedico
             )
         }
@@ -35,10 +38,9 @@ module.exports = class ScheduleStorage {
             AND idPaciente IS NULL;`
     
         try {
-            const results = await this.connector.runQuery(query, [medicId, startDateTime, startDateTime]).then(res => res.results)
+            const results = await this.connector.runQuery(query, [medicId, startDateTime]).then(res => res.results)
             if (results) {
                 return results.map((schedule) => {
-                    console.log(schedule)
                     return new ScheduleDto(
                         schedule.idCita,
                         schedule.horaInicio,

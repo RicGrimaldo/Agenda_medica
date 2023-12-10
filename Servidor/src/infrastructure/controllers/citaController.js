@@ -200,37 +200,31 @@ citaController.citasDisponibles = (userCanRequestAvailableSchedulesUseCase) => {
       }))
     })
   }
-} 
-//  (req, res) => {
-//   req.getConnection((err, conn) => {
-//     if (err) return res.send(err)
+}
 
-//     conn.query("SELECT * FROM citas WHERE idMedico= ? AND fecha=? AND idPaciente IS NULL AND CONCAT(citas.fecha, ' ', citas.horaInicio) >= NOW()", [req.body.idMedico, req.body.fechaCita], (err, rows) => {
-//       if (err) return res.send(err)
-//       res.json(rows)
-//     })
-//   })
-// }
-
-/**
- * Regresa todas la información de las citas ya programadas con un paciente y que aun no han sucedido
- * @param {*} req Contiene la petición del usuario
- * @param {*} res Contiene la respuesta que se enviara a la peticion
- */
-citaController.citasProgramadas = (req, res) => {
-  req.getConnection((err, conn) => {
-    if (err) return res.send(err)
-
-    conn.query("SELECT citas.fecha, medicos.idMedico, pacientes.idPaciente, citas.horaInicio, citas.modalidad, medicos.nombreMedico, medicos.consultorioMedico, citas.idCita, pacientes.nombrePaciente, pacientes.CURPPaciente FROM medicos JOIN citas JOIN pacientes WHERE citas.idPaciente=pacientes.idPaciente AND medicos.idMedico=citas.idMedico AND citas.notasConsultas IS NULL AND CONCAT(citas.fecha, ' ', citas.horaInicio) >= NOW()", (err, rows) => {
-      if (err) return res.send(err)
-
-      for (let i = 0; i < rows.length; i++) {
-        const fecha = new Date(rows[i].fecha)
-        rows[i].fecha = fecha.toISOString().slice(0, 10)
-      }
-      res.json(rows)
+citaController.citasProgramadas = (userCanRequestIncomingAppointmentsUseCase) => {
+  return (req, res) => {
+    userCanRequestIncomingAppointmentsUseCase.getIncomingAppointments().then((expAppointmentDtos) => {
+      res.status(200).json(expAppointmentDtos.map((expAppointmentDto) => {
+        const fecha = new Date(expAppointmentDto.scheduleDto.startDateTime)
+        const hora = fecha.getUTCHours().toString().padStart(2, '0');
+        const minutos = fecha.getUTCMinutes().toString().padStart(2, '0');
+        const segundos = fecha.getUTCSeconds().toString().padStart(2, '0');
+        return {
+          fecha: fecha.toISOString().slice(0,10),
+          idMedico: expAppointmentDto.expMedicDto.id,
+          idPaciente: expAppointmentDto.patientDto.id,
+          horaInicio: hora + ":" + minutos + ":" + segundos,
+          modalidad: expAppointmentDto.expMedicDto.specialityDto.id,
+          nombreMedico: expAppointmentDto.expMedicDto.name,
+          idCita: expAppointmentDto.scheduleDto.id,
+          nombrePaciente: expAppointmentDto.patientDto.name,
+          consultorioMedico: expAppointmentDto.expMedicDto.office,
+          curpPaciente: expAppointmentDto.patientDto.curp
+        }
+      }))
     })
-  })
+  }
 }
 /**
  * Actualiza la información de una cita en la base de datos
