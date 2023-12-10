@@ -29,14 +29,16 @@ module.exports = class ScheduleStorage {
     async getAvailableByMedic (medicId, startDateTime){
         const query = `
             SELECT * FROM citas 
-            WHERE idMedico = ? 
-            AND CONCAT(fecha, ' ', horaInicio) >= ?
+            WHERE idMedico = ?
+            AND fecha=?
+            AND CONCAT(fecha, ' ', horaInicio) >= NOW()
             AND idPaciente IS NULL;`
     
         try {
-            const results = await this.connector.runQuery(query, [medicId, startDateTime]).then(res => res.results)
+            const results = await this.connector.runQuery(query, [medicId, startDateTime, startDateTime]).then(res => res.results)
             if (results) {
                 return results.map((schedule) => {
+                    console.log(schedule)
                     return new ScheduleDto(
                         schedule.idCita,
                         schedule.horaInicio,
