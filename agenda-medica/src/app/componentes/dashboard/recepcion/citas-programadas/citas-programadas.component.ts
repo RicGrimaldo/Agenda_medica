@@ -66,7 +66,7 @@ export class CitasProgramadasComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator
 
   ngAfterViewInit (): void {
-    if (this.dataSource !== null) {
+    if (this.dataSource != null) {
       this.dataSource.paginator = this.paginator
     }
   }
