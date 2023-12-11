@@ -29,6 +29,6 @@ module.exports = class AdminCanUpdateReceptionistUseCase {
 
   async validateEmail (id, email) {
     const user = await this.userStorage.findByEmail(email)
-    return !user || user.id === id
+    return !user || parseInt(user.id) === parseInt(id)
   }
 }
