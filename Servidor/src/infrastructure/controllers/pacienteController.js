@@ -77,9 +77,9 @@ pacienteController.historialClinico = (adminCanGetPatientMedicalHistoryUseCase) 
   return (req, res) => {
     const id = req.params.id
     adminCanGetPatientMedicalHistoryUseCase.getPatientMedicalHistory(id).then((getPatientMedicalHistoryResDto) => {
-      for (let i = 0; i < getPatientMedicalHistoryResDto.length; i++) {
-        const date = new Date(getPatientMedicalHistoryResDto[i].fecha)
-        getPatientMedicalHistoryResDto[i].fecha = date.toISOString().slice(0, 10)
+      for (let i = 0; i < getPatientMedicalHistoryResDto.dtos.length; i++) {
+        const date = new Date(getPatientMedicalHistoryResDto.dtos[i].fecha)
+        getPatientMedicalHistoryResDto.dtos[i].fecha = date.toISOString().slice(0, 10)
       }
       res.json(getPatientMedicalHistoryResDto.dtos)
     })
