@@ -157,7 +157,7 @@ module.exports = class MedicEntity {
     if (!this.#validateDatesAreCorrect(startDateTime, endDateTime)) throw new Error('Invalid date!')
     if (!this.#validateDatesAreNotOverlapping(startDateTime, endDateTime)) throw new Error('Invalid date!')
     if (!this.#validateDayIsAvailable([startDateTime, endDateTime])) throw new Error('Day unavailable!')
-    this.scheduleDtos.push(new ScheduleDto(undefined, new Date(startDateTime), new Date(endDateTime), this.id))
+    this.scheduleDtos.push(new ScheduleDto(undefined, startDateTime, endDateTime, this.id))
   }
 
   #validateDatesAreCorrect (startDateTime, endDateTime) {
