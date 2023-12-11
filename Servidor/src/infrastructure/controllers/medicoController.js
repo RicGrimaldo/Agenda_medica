@@ -92,15 +92,19 @@ medicoController.agenda = (adminCanGetMedicDiaryUseCase) => {
   return (req, res) => {
     const id = req.params.id
     adminCanGetMedicDiaryUseCase.getMedicDiary(id).then((getMedicDiaryResDto) => {
-      for (let i = 0; i < getMedicDiaryResDto.dtos.length; i++) {
-        const date = getMedicDiaryResDto.dtos[i].fecha
-        const formattedDate = date.toISOString().substring(0, 10)
-        const start = formattedDate.concat('T', getMedicDiaryResDto.dtos[i].horaInicio)
-        const end = formattedDate.concat('T', getMedicDiaryResDto.dtos[i].horaTermino)
-        getMedicDiaryResDto.dtos[i].start = start
-        getMedicDiaryResDto.dtos[i].end = end
+      if (getMedicDiaryResDto.status) {
+        for (let i = 0; i < getMedicDiaryResDto.dtos.length; i++) {
+          const date = getMedicDiaryResDto.dtos[i].fecha
+          const formattedDate = date.toISOString().substring(0, 10)
+          const start = formattedDate.concat('T', getMedicDiaryResDto.dtos[i].horaInicio)
+          const end = formattedDate.concat('T', getMedicDiaryResDto.dtos[i].horaTermino)
+          getMedicDiaryResDto.dtos[i].start = start
+          getMedicDiaryResDto.dtos[i].end = end
+        }
+        res.json(getMedicDiaryResDto.dtos)
+      } else {
+        res.json('No se encontraron citas')
       }
-      res.json(getMedicDiaryResDto.dtos)
     })
   }
 }
@@ -108,15 +112,19 @@ medicoController.agendaDisponible = (adminCanGetAvailableMedicDiaryUseCase) => {
   return (req, res) => {
     const id = req.params.id
     adminCanGetAvailableMedicDiaryUseCase.getAvailableMedicDiary(id).then((getAvailableMedicDiaryResDto) => {
-      for (let i = 0; i < getAvailableMedicDiaryResDto.dtos.length; i++) {
-        const date = getAvailableMedicDiaryResDto.dtos[i].fecha
-        const formattedDate = date.toISOString().substring(0, 10)
-        const start = formattedDate.concat('T', getAvailableMedicDiaryResDto.dtos[i].horaInicio)
-        const end = formattedDate.concat('T', getAvailableMedicDiaryResDto.dtos[i].horaTermino)
-        getAvailableMedicDiaryResDto.dtos[i].start = start
-        getAvailableMedicDiaryResDto.dtos[i].end = end
+      if (getAvailableMedicDiaryResDto.status) {
+        for (let i = 0; i < getAvailableMedicDiaryResDto.dtos.length; i++) {
+          const date = getAvailableMedicDiaryResDto.dtos[i].fecha
+          const formattedDate = date.toISOString().substring(0, 10)
+          const start = formattedDate.concat('T', getAvailableMedicDiaryResDto.dtos[i].horaInicio)
+          const end = formattedDate.concat('T', getAvailableMedicDiaryResDto.dtos[i].horaTermino)
+          getAvailableMedicDiaryResDto.dtos[i].start = start
+          getAvailableMedicDiaryResDto.dtos[i].end = end
+        }
+        res.json(getAvailableMedicDiaryResDto.dtos)
+      } else {
+        res.json('Sin citas disponibles')
       }
-      res.json(getAvailableMedicDiaryResDto.dtos)
     })
   }
 }
@@ -125,11 +133,15 @@ medicoController.citasProgramadas = (adminCanGetReservedMedicDiaryUseCase) => {
   return (req, res) => {
     const id = req.params.id
     adminCanGetReservedMedicDiaryUseCase.getReservedMedicDiary(id).then((getReservedMedicDiaryResDto) => {
-      for (let i = 0; i < getReservedMedicDiaryResDto.dtos.length; i++) {
-        const date = new Date(getReservedMedicDiaryResDto.dtos[i].fecha)
-        getReservedMedicDiaryResDto.dtos[i].fecha = date.toISOString().slice(0, 10)
+      if (getReservedMedicDiaryResDto.status) {
+        for (let i = 0; i < getReservedMedicDiaryResDto.dtos.length; i++) {
+          const date = new Date(getReservedMedicDiaryResDto.dtos[i].fecha)
+          getReservedMedicDiaryResDto.dtos[i].fecha = date.toISOString().slice(0, 10)
+        }
+        res.json(getReservedMedicDiaryResDto.dtos)
+      } else {
+        res.json('No hay citas programadas')
       }
-      res.json(getReservedMedicDiaryResDto.dtos)
     })
   }
 }
