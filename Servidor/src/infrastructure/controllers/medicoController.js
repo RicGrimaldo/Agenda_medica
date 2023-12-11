@@ -103,7 +103,7 @@ medicoController.agenda = (adminCanGetMedicDiaryUseCase) => {
         }
         res.json(getMedicDiaryResDto.dtos)
       } else {
-        res.json({})
+        res.json([])
       }
     })
   }
@@ -123,7 +123,7 @@ medicoController.agendaDisponible = (adminCanGetAvailableMedicDiaryUseCase) => {
         }
         res.json(getAvailableMedicDiaryResDto.dtos)
       } else {
-        res.json({})
+        res.json([])
       }
     })
   }
@@ -140,7 +140,7 @@ medicoController.citasProgramadas = (adminCanGetReservedMedicDiaryUseCase) => {
         }
         res.json(getReservedMedicDiaryResDto.dtos)
       } else {
-        res.json({})
+        res.json([])
       }
     })
   }
