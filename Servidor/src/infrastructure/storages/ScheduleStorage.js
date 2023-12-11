@@ -35,7 +35,8 @@ module.exports = class ScheduleStorage {
             WHERE idMedico = ?
             AND fecha=?
             AND CONCAT(fecha, ' ', horaInicio) >= NOW()
-            AND idPaciente IS NULL;`
+            AND idPaciente IS NULL
+            ORDER BY horaInicio;`
     
         try {
             const results = await this.connector.runQuery(query, [medicId, startDateTime]).then(res => res.results)
